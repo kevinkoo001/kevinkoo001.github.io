@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://kevinkoo001.github.io/attic/sitemap.xml
+Sitemap: https://kevinkoo001.github.io/sitemap.xml
