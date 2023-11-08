@@ -1,58 +1,82 @@
 {
   "basics": {
-    "name": "Albert Einstein",
-    "label": "Scientist",
+    "name": "Hyungjoon Koo",
+    "label": "Assistant Professor",
     "image": "",
-    "email": "albert@einstein.de",
-    "phone": "(912) 123-4567",
-    "url": "https://alshedivat.github.io/al-folio/",
-    "summary": "A German-born theoretical physicist, widely ranked among the greatest and most influential scientists of all time",
+    "email": "kevin.koo AT skku.edu",
+    "phone": "(031) 299-4958",
+    "url": "https://kevinkoo001.github.io/attic/",
+    "summary": "",
     "location": {
-      "address": "2712 Broadway St",
-      "postalCode": "CA 94115",
-      "city": "San Francisco",
-      "countryCode": "US",
-      "region": "California"
+      "address": "",
+      "postalCode": "",
+      "city": "",
+      "countryCode": "KR",
+      "region": "South Korea"
     },
     "profiles": [
       {
-        "network": "Twitter",
-        "username": "AlbertEinstein",
-        "url": "https://twitter.com/AlbertEinstein"
+        "network": "",
+        "username": "",
+        "url": ""
       }
     ]
   },
   "work": [
     {
-      "name": "Institute for Advanced Study, Princeton University",
-      "position": "Professor of Theoretical Physics",
+      "name": "Sungkyunkwan University",
+      "position": "Assistant Professor",
       "url": "https://example.com",
-      "startDate": "1933-01-01",
-      "endDate": "1955-01-01",
-      "summary": "Teaching at Palmer Physical Laboratory (now 302 Frist Campus Center). While not a professor at Princeton, I associated with the physics professors and continued to give lectures on campus.",
+      "startDate": "2021",
+      "endDate": "Now",
+      "summary": "",
       "highlights": [
-        "Relativity"
+        ""
+      ]
+    },
+    {
+      "name": "Georgia Tech",
+      "position": "Postdoctoral Researcher",
+      "url": "https://gts3.org/",
+      "startDate": "2019",
+      "endDate": "2020",
+      "summary": "Adviser: Taesoo Kim",
+      "highlights": [
+        ""
       ]
     }
   ],
   "volunteer": [],
   "education": [
     {
-      "institution": "University of Zurich, Zurich, Switzerland",
-      "url": "https://www.uzh.ch/",
-      "area": "Software Development",
-      "studyType": "PhD",
-      "startDate": "1905-01-01",
-      "endDate": "1905-01-01",
+      "institution": "Stony Brook University",
+      "url": "https://www.stonybrook.edu/",
+      "area": "Computer Science",
+      "studyType": "Ph.D.",
+      "startDate": "2013",
+      "endDate": "2019",
+      "score": "",
+      "summary": "Adviser: Michalis Polychronakis",
+      "courses": [
+        ""
+      ]
+    },
+    {
+      "institution": "Korea University",
+      "url": "https://www.stonybrook.edu/",
+      "area": "Information Security",
+      "studyType": "MS.",
+      "startDate": "2008",
+      "endDate": "2010",
       "score": "",
       "courses": [
-        "Theory of Relativity"
+        ""
       ]
     }
   ],
-  "awards": [
+  "services": [
     {
-      "title": "Nobel Prize in Physics",
+      "title": "Program Committee",
       "date": "1921-11-01",
       "awarder": "Royal Swedish Academy of Sciences",
       "summary": "The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'"
@@ -63,7 +87,7 @@
   "skills": [],
   "languages": [
     {
-      "language": "German",
+      "language": "Korean",
       "fluency": "Native speaker"
     },
     {

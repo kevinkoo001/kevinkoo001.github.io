@@ -1,0 +1,14 @@
+---
+layout: null
+---
+[
+ {% for entry in site.scholar.bibliography %}
+    {
+        "title": "{{ entry.title | strip_html | escape }}",   
+	      "url": "{{ entry.link.url }}",
+	      "author": "{{ entry.author_array }}",
+        "display": "{{entry.link.display }}"
+    } {% unless forloop.last %},
+    {% endunless %}
+  {% endfor %}
+]

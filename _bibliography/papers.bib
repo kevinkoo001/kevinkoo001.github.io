@@ -1,84 +1,519 @@
 ---
 ---
 
-@string{aps = {American Physical Society,}}
+@INPROCEEDINGS {benzene,
+abbr={SP},
+author = {Y. Park and H. Lee and J. Jung and H. Koo and H. Kim},
+booktitle = {2024 IEEE Symposium on Security and Privacy (SP)},
+title = {BENZENE: A Practical Root Cause Analysis System with an Under-Constrained State Mutation},
+year = {2024},
+volume = {},
+issn = {2375-1207},
+pages = {74-74},
+abstract = {Fuzzing has demonstrated great success in bug discovery, and plays a crucial role in software testing today. 
+  Despite the increasing popularity of fuzzing, automated root cause analysis (RCA) has drawn less attention. 
+  One of the recent advances in RCA is crash-based statistical debugging, which leverages the behavioral differences 
+  in program execution between crash-triggered and non-crashing inputs. Hence, obtaining non-crashing behaviors 
+  close to the original crash is crucial but challenging with previous approaches (e.g., fuzzing). 
+  In this paper, we present BENZENE, a practical end-to-end RCA system that facilitates 
+  an automated crash diagnosis. To this end, we introduce a novel technique, called under-constrained state mutation, 
+  that generates both crashing and non-crashing behaviors for effective and efficient RCA. 
+  We design and implement the BENZENE prototype, and evaluate it with 60 vulnerabilities in the wild. 
+  Our empirical results demonstrate that BENZENE not only surpasses in performance (i.e., root cause ranking), 
+  but also achieves superior results in both speed (4.6 times faster) and memory footprint (31.4 times less) 
+  on average than prior approaches.},
+keywords = {root cause analysis;vulnerability analysis},
+doi = {10.1109/SP54263.2024.00074},
+url = {https://doi.ieeecomputersociety.org/10.1109/SP54263.2024.00074},
+publisher = {IEEE Computer Society},
+address = {Los Alamitos, CA, USA},
+month = {may},
+bibtex_show={true},
+selected={true},
+pdf={sp24-benzene-official.pdf},
+code={#},
+}
 
-@book{einstein1956investigations,
+@ARTICLE{win-normalization,
+  author={Koo, Hyungjoon and Park, Soyeon and Choi, Daejin and Kim, Taesoo},
+  journal={IEEE Access}, 
+  title={Binary Code Representation With Well-Balanced Instruction Normalization}, 
+  abstract = {The recovery of contextual meanings on a machine code is required by a wide range of 
+  binary analysis applications, such as bug discovery, malware analysis, and code clone detection. 
+  To accomplish this, advancements on binary code analysis borrow the techniques from natural language 
+  processing to automatically infer the underlying semantics of a binary, rather than replying 
+  on manual analysis. One of crucial pipelines in this process is instruction normalization, 
+  which helps to reduce the number of tokens and to avoid an out-of-vocabulary (OOV) problem. 
+  However, existing approaches often substitutes the operand(s) of an instruction with 
+  a common token (e. g., callee target → FOO), inevitably resulting in the loss of important information. 
+  In this paper, we introduce well-balanced instruction normalization (WIN), a novel approach 
+  that retains rich code information while minimizing the downsides of code normalization. 
+  With large swaths of binary code, our finding shows that the instruction distribution follows 
+  Zipf’s Law like a natural language, a function conveys contextually meaningful information, 
+  and the same instruction at different positions may require diverse code representations. 
+  To show the effectiveness of WIN, we present DEEP SEMANTIC that harnesses the BERT architecture 
+  with two training phases: pre-training for generic assembly code representation, and 
+  fine-tuning for building a model tailored to a specialized task. We define a downstream task of 
+  binary code similarity detection, which requires underlying code semantics. Our experimental results 
+  show that our binary similarity model with WIN outperforms two state-of-the-art binary similarity tools, 
+  DeepBinDiff and SAFE, with an average improvement of 49.8% and 15.8%, respectively.},
+  year={2023},
+  volume={11},
+  number={},
+  pages={29183-29198},
+  doi={10.1109/ACCESS.2023.3259481},
   bibtex_show={true},
-  title={Investigations on the Theory of the Brownian Movement},
-  author={Einstein, Albert},
-  year={1956},
-  publisher={Courier Corporation},
-  preview={brownian-motion.gif}
+  pdf={access23-deepsemantic.pdf},
 }
 
-@article{einstein1950meaning,
-  abbr={AJP},
+@INPROCEEDINGS{smartmark,
+  abbr={ICSE},
+  author={Kim, Taeyoung and Jang, Yunhee and Lee, Chanjong and Koo, Hyungjoon and Kim, Hyoungshick},
+  booktitle={2023 IEEE/ACM 45th International Conference on Software Engineering (ICSE)}, 
+  title={Smartmark: Software Watermarking Scheme for Smart Contracts}, 
+  year={2023},
+  volume={},
+  abstract = {A smart contract is a self-executing program on a blockchain to ensure an immutable 
+  and transparent agreement without the involvement of intermediaries. Despite its growing popularity 
+  for many blockchain platforms like Ethereum, no technical means is available even when 
+  a smart contract requires to be protected from being copied. One promising direction to claim 
+  a software ownership is software watermarking. However, applying existing software watermarking 
+  techniques is challenging because of the unique properties of a smart contract, such as 
+  a code size constraint, non-free execution cost, and no support for dynamic allocation under 
+  a virtual machine environment. This paper introduces a novel software watermarking scheme, 
+  dubbed Smartmark, aiming to protect the ownership of a smart contract against a pirate activity. 
+  Smartmark builds the control flow graph of a target contract runtime bytecode, and locates 
+  a collection of bytes that are randomly elected for representing a watermark. We implement 
+  a full-fledged prototype for Ethereum, applying Smartmark to 27,824 unique smart contract bytecodes. 
+  Our empirical results demonstrate that Smartmark can effectively embed a watermark into 
+  a smart contract and verify its presence, meeting the requirements of credibility and imperceptibility 
+  while incurring an acceptable performance degradation. Besides, our security analysis shows that 
+  Smartmark is resilient against viable watermarking corruption attacks; e.g., a large number of 
+  dummy opcodes are needed to disable a watermark effectively, resulting in producing 
+  an illegitimate smart contract clone that is not economical.}, 
+  number={},
+  pages={283-294},
+  doi={10.1109/ICSE48619.2023.00035},
+  selected={true},
   bibtex_show={true},
-  title={The meaning of relativity},
-  author={Einstein, Albert and Taub, AH},
-  journal={American Journal of Physics},
-  volume={18},
-  number={6},
-  pages={403--404},
-  year={1950},
-  publisher={American Association of Physics Teachers}
+  pdf={icse23-smartmark.pdf},
+  slides={icse23-smarkmark-slides.pdf}
 }
 
-@article{PhysRev.47.777,
-  abbr={PhysRev},
-  title={Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?},
-  author={Einstein, A. and Podolsky, B. and Rosen, N.},
-  abstract={In a complete theory there is an element corresponding to each element of reality. A sufficient condition for the reality of a physical quantity is the possibility of predicting it with certainty, without disturbing the system. In quantum mechanics in the case of two physical quantities described by non-commuting operators, the knowledge of one precludes the knowledge of the other. Then either (1) the description of reality given by the wave function in quantum mechanics is not complete or (2) these two quantities cannot have simultaneous reality. Consideration of the problem of making predictions concerning a system on the basis of measurements made on another system that had previously interacted with it leads to the result that if (1) is false then (2) is also false. One is thus led to conclude that the description of reality as given by a wave function is not complete.},
-  journal={Phys. Rev.},
-  volume={47},
-  issue={10},
-  pages={777--780},
-  numpages={0},
-  year={1935},
-  month={May},
-  publisher=aps,
-  doi={10.1103/PhysRev.47.777},
-  url={http://link.aps.org/doi/10.1103/PhysRev.47.777},
-  html={https://journals.aps.org/pr/abstract/10.1103/PhysRev.47.777},
-  pdf={example_pdf.pdf},
-  altmetric={248277},
-  dimensions={true},
-  selected={true}
+@inproceedings{asmdepictor,
+abbr={ASIACCS},
+author = {Kim, Hyunjin and Bak, Jinyeong and Cho, Kyunghyun and Koo, Hyungjoon},
+title = {A Transformer-Based Function Symbol Name Inference Model from an Assembly Language for Binary Reversing},
+year = {2023},
+isbn = {9798400700989},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3579856.3582823},
+doi = {10.1145/3579856.3582823},
+abstract = {Reverse engineering of a stripped binary has a wide range of applications, 
+yet it is challenging mainly due to the lack of contextually useful information within. 
+Once debugging symbols (e.g., variable names, types, function names) are discarded, recovering 
+such information is not technically viable with traditional approaches like static or dynamic binary analysis. 
+We focus on a function symbol name recovery, which allows a reverse engineer to gain a quick overview of 
+an unseen binary. The key insight is that a well-developed program labels a meaningful function name 
+that describes its underlying semantics well. In this paper, we present AsmDepictor, 
+the Transformer-based framework that generates a function symbol name from a set of assembly codes 
+(i.e., machine instructions), which consists of three major components: binary code refinement, 
+model training, and inference. To this end, we conduct systematic experiments on the effectiveness of 
+code refinement that can enhance an overall performance. We introduce the per-layer positional 
+embedding and Unique-softmax for AsmDepictor so that both can aid to capture a better relationship between tokens. 
+Lastly, we devise a novel evaluation metric tailored for a short description length, the Jaccard* score. 
+Our empirical evaluation shows that the performance of AsmDepictor by far surpasses that of 
+the state-of-the-art models up to around 400%. The best AsmDepictor model achieves an F1 of 71.5 
+and Jaccard* of 75.4.},
+booktitle = {Proceedings of the 2023 ACM Asia Conference on Computer and Communications Security},
+pages = {951–965},
+numpages = {15},
+keywords = {reversing, neural networks, assembly, function name, Transformer},
+location = {Melbourne, VIC, Australia},
+series = {ASIA CCS '23},
+selected={true},
+bibtex_show={true},
+pdf={asiaccs23-asmdepictor.pdf},
+slides={asmdepictor-asiaccs23-slides.pdf}
 }
 
-@article{einstein1905molekularkinetischen,
-  title={{\"U}ber die von der molekularkinetischen Theorie der W{\"a}rme geforderte Bewegung von in ruhenden Fl{\"u}ssigkeiten suspendierten Teilchen},
-  author={Einstein, A.},
-  journal={Annalen der physik},
-  volume={322},
-  number={8},
-  pages={549--560},
-  year={1905},
-  publisher={Wiley Online Library}
+
+@inproceedings{deview,
+abbr={ACSAC},
+author = {Oh, ChangSeok and Lee, Sangho and Qian, Chenxiong and Koo, Hyungjoon and Lee, Wenke},
+title = {DeView: Confining Progressive Web Applications by Debloating Web APIs},
+year = {2022},
+isbn = {9781450397599},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3564625.3567987},
+doi = {10.1145/3564625.3567987},
+abstract = {A progressive web application (PWA) becomes an attractive option 
+for building universal applications based on feature-rich web Application Programming Interfaces (APIs). 
+While flexible, such vast APIs inevitably bring a significant increase in an API attack surface, 
+which commonly corresponds to a functionality that is neither needed nor wanted by the application. 
+A promising approach to reduce the API attack surface is software debloating, a technique wherein 
+an unused functionality is programmatically removed from an application. Unfortunately, debloating PWAs 
+is challenging, given the monolithic design and non-deterministic execution of a modern web browser. 
+In this paper, we present DeView, a practical approach that reduces the attack surface of a PWA 
+by blocking unnecessary but accessible web APIs. DeView tackles the challenges of PWA debloating by 
+i) record-and-replay web API profiling that identifies needed web APIs on an app-by-app basis by replaying 
+(recorded) browser interactions and ii) compiler-assisted browser debloating that eliminates 
+the entry functions of corresponding web APIs from the mapping between web API and its entry point in a binary. 
+Our evaluation shows the effectiveness and practicality of DeView. DeView successfully eliminates 91.8% of 
+accessible web APIs while i) maintaining original functionalities and ii) preventing 76.3% 
+of known exploits on average.},
+booktitle = {Proceedings of the 38th Annual Computer Security Applications Conference},
+pages = {881–895},
+numpages = {15},
+keywords = {Record-and-Replay, PWA, Debloating, Progressive Web Application, Program Analysis, Browser, Web APIs},
+location = {Austin, TX, USA},
+series = {ACSAC '22},
+selected={true},
+bibtex_show={true},
+pdf={acsac22-deview-offcial.pdf},
+code={https://github.com/shivamidow/deview}
 }
 
-@article{einstein1905movement,
-  abbr={Ann. Phys.},
-  title={Un the movement of small particles suspended in statiunary liquids required by the molecular-kinetic theory 0f heat},
-  author={Einstein, A.},
-  journal={Ann. Phys.},
-  volume={17},
-  pages={549--560},
-  year={1905}
+@inproceedings{binshot,
+abbr={ACSAC},
+author = {Ahn, Sunwoo and Ahn, Seonggwan and Koo, Hyungjoon and Paek, Yunheung},
+title = {Practical Binary Code Similarity Detection with BERT-Based Transferable Similarity Learning},
+year = {2022},
+isbn = {9781450397599},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3564625.3567975},
+doi = {10.1145/3564625.3567975},
+abstract = {Binary code similarity detection (BCSD) serves as a basis for a wide spectrum of applications, 
+including software plagiarism, malware classification, and known vulnerability discovery. 
+However, the inference of contextual meanings of a binary is challenging due to the absence of 
+semantic information available in source codes. Recent advances leverage the benefits of 
+a deep learning architecture into a better understanding of underlying code semantics and 
+the advantages of the Siamese architecture into better BCSD. In this paper, we propose BinShot, 
+a BERT-based similarity learning architecture that is highly transferable for effective BCSD. 
+We tackle the problem of detecting code similarity with one-shot learning (a special case of few-shot learning). 
+To this end, we adopt a weighted distance vector with a binary cross entropy as a loss function 
+on top of BERT. With the prototype of BinShot, our experimental results demonstrate the effectiveness, 
+transferability, and practicality of BinShot, which is robust to detecting the similarity of 
+previously unseen functions. We show that BinShot outperforms the previous state-of-the-art approaches for BCSD.},
+booktitle = {Proceedings of the 38th Annual Computer Security Applications Conference},
+pages = {361–374},
+numpages = {14},
+keywords = {Binary Analysis, Similarity Detection, Deep Neural Network},
+location = {Austin, TX, USA},
+series = {ACSAC '22},
+selected={true},
+bibtex_show={true},
+pdf={acsac22-binshot-offcial.pdf},
+code={https://github.com/asw0316/binshot},
+slides={binshot-acsac22-slides.pdf}
 }
 
-@article{einstein1905electrodynamics,
-  title={On the electrodynamics of moving bodies},
-  author={Einstein, A.},
-  year={1905}
-}
 
-@book{przibram1967letters,
+@INPROCEEDINGS{iotivity,
+  author={Jung, Hyeonah and Koo, Hyungjoon and Jeong, Jaehoon Paul},
+  booktitle={2022 24th International Conference on Advanced Communication Technology (ICACT)}, 
+  title={IoTivity Packet Parser for Encrypted Messages in Internet of Things}, 
+  year={2022},
+  volume={},
+  number={},
+  abstract={The Internet of Things (IoT) market has been ever-growing because both the demand of smart lives 
+  and the number of mobile users keep increasing. On the other hand, IoT device manufacturers tend to employ 
+  proprietary operating systems and network protocols, which may lead device interoperability issues. 
+  The Open Connectivity Foundation (OCF) has established a standard protocol for seamless IoT communication. 
+  IoTivity is one of reference implementations that conforms to the OCF specification. 
+  IoTivity utilizes both Datagram Transport Layer Security (DTLS) and Constrained Application Protocol (CoAP) 
+  to support a lightweight and secure communication. Although a packet analysis tool like Wireshark offers 
+  a feature to decrypt messages over TLS or DTLS by feeding a session key that a Web browser records, 
+  it cannot be directly applied to IoTivity because it lacks such a key-tracing functionality. In this paper, 
+  we present an IoTivity Packet Parser (IPP) for encrypted CoAP messages tailored to IoTivity. 
+  To this end, we modify IoTivity source code to extract required keys, and leverage them to parse each field 
+  automatically for further protocol analysis in a handy manner.},
+  pages={53-57},
+  doi={10.23919/ICACT53585.2022.9728913},
   bibtex_show={true},
-  title={Letters on wave mechanics},
-  author={Einstein, Albert and Schrödinger, Erwin and Planck, Max and Lorentz, Hendrik Antoon and Przibram, Karl},
-  year={1967},
-  publisher={Vision},
-  preview={wave-mechanics.gif}
+}
+
+@inproceedings{softmark,
+abbr={ACSAC},
+author = {Kang, Honggoo and Kwon, Yonghwi and Lee, Sangjin and Koo, Hyungjoon},
+title = {SoftMark: Software Watermarking via a Binary Function Relocation},
+year = {2021},
+isbn = {9781450385794},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3485832.3488027},
+doi = {10.1145/3485832.3488027},
+abstract = {The ease of reproducibility of digital artifacts raises a growing concern in copyright infringement; 
+in particular, for a software product. Software watermarking is one of the promising techniques 
+to verify the owner of licensed software by embedding a digital fingerprint. Developing an ideal 
+software watermark scheme is challenging because i) unlike digital media watermarking, 
+software watermarking must preserve the original code semantics after inserting software watermark, 
+and ii) it requires well-balanced properties of credibility, resiliency, capacity, imperceptibility, and efficiency. 
+We present SoftMark, a software watermarking system that leverages a function relocation where 
+the order of functions implicitly encodes a hidden identifier. By design, SoftMark does not introduce 
+additional structures (i.e., codes, blocks, or subroutines), being robust in unauthorized detection, 
+while maintaining a negligible performance overhead and reasonable capacity. With various strategies 
+against viable attacks (i.e., static binary re-instrumentation), we tackle the limitations of previous 
+reordering-based approaches. Our empirical results demonstrate the practicality and effectiveness 
+by successful embedding and extraction of various watermark values.},
+booktitle = {Annual Computer Security Applications Conference},
+pages = {169–181},
+numpages = {13},
+keywords = {Function Relocation, Watermark, Software Watermarking, Binary Instrumentation, Function Reordering},
+location = {Virtual Event, USA},
+series = {ACSAC '21},
+selected={true},
+bibtex_show={true},
+pdf={acsac21-softmark.pdf},
+}
+
+@inproceedings{lookback,
+abbr={ACSAC},
+author = {Koo, Hyungjoon and Park, Soyeon and Kim, Taesoo},
+title = {A Look Back on a Function Identification Problem},
+year = {2021},
+isbn = {9781450385794},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3485832.3488018},
+doi = {10.1145/3485832.3488018},
+abstract = {A function recognition problem serves as a basis for further binary analysis and many applications. 
+Although common challenges for function detection are well known, prior works have repeatedly claimed 
+a noticeable result with a high precision and recall. In this paper, we aim to fill the void of what has been 
+overlooked or misinterpreted by closely looking into the previous datasets, metrics, and evaluations 
+with varying case studies. Our major findings are that i) a common corpus like GNU utilities is 
+insufficient to represent the effectiveness of function identification, ii) it is difficult to claim, 
+at least in the current form, that an ML-oriented approach is scientifically superior to deterministic ones 
+like IDA or Ghidra, iii) the current metrics may not be reasonable enough to measure 
+varying function detection cases, and iv) the capability of recognizing functions depends on 
+each tool’s strategic or peculiar choice. We perform re-evaluation of existing approaches on our own dataset,
+demonstrating that not a single state-of-the-art tool dominates all the others. 
+In conclusion, a function detection problem has not yet been fully addressed, and we need a better methodology 
+and metric to make advances in the field of function identification.},
+booktitle = {Annual Computer Security Applications Conference},
+pages = {158–168},
+numpages = {11},
+keywords = {Binary, ML-oriented, Function Recognition, Lookback, Function Identification},
+location = {Virtual Event, USA},
+series = {ACSAC '21},
+selected={true},
+bibtex_show={true},
+pdf={acsac21-lookback.pdf},
+}
+
+@inproceedings{slimium,
+abbr={CCS},
+author = {Qian, Chenxiong and Koo, Hyungjoon and Oh, ChangSeok and Kim, Taesoo and Lee, Wenke},
+title = {Slimium: Debloating the Chromium Browser with Feature Subsetting},
+year = {2020},
+isbn = {9781450370899},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3372297.3417866},
+doi = {10.1145/3372297.3417866},
+abstract = {Today, a web browser plays a crucial role in offering a broad spectrum of web experiences.
+ The most popular browser, Chromium, has become an extremely complex application to meet ever-increasing user demands, 
+ exposing unavoidably large attack vectors due to its large code base. Code debloating attracts attention 
+ as a means of reducing such a potential attack surface by eliminating unused code. However, it is very challenging 
+ to perform sophisticated code removal without breaking needed functionalities because Chromium operates on 
+ a large number of closely connected and complex components, such as a renderer and JavaScript engine. 
+ In this paper, we present Slimium, a debloating framework for a browser (i.e., Chromium) that harnesses 
+ a hybrid approach for a fast and reliable binary instrumentation. The main idea behind Slimium is to determine 
+ a set of features as a debloating unit on top of a hybrid (i.e., static, dynamic, heuristic) analysis, 
+ and then leverage feature subsetting to code debloating. It aids in i) focusing on security-oriented features, 
+ ii) discarding unneeded code simply without complications, and iii) reasonably addressing a non-deterministic 
+ path problem raised from code complexity. To this end, we generate a feature-code map with a relation vector 
+ technique and prompt webpage profiling results. Our experimental results demonstrate the practicality 
+ and feasibility of Slimium for 40 popular websites, as on average it removes 94 CVEs (61.4%) by cutting down 
+ 23.85 MB code (53.1%) from defined features (21.7% of the whole) in Chromium.},
+booktitle = {Proceedings of the 2020 ACM SIGSAC Conference on Computer and Communications Security},
+pages = {461–476},
+numpages = {16},
+keywords = {binary rewriting, program analysis, browser, debloating},
+location = {Virtual Event, USA},
+series = {CCS '20},
+selected={true},
+bibtex_show={true},
+pdf={ccs20-slimium.pdf},
+}
+
+@INPROCEEDINGS{ccr,
+  abbr={SP},
+  author={Koo, Hyungjoon and Chen, Yaohui and Lu, Long and Kemerlis, Vasileios P. and Polychronakis, Michalis},
+  booktitle={2018 IEEE Symposium on Security and Privacy (SP)}, 
+  title={Compiler-Assisted Code Randomization}, 
+  year={2018},
+  volume={},
+  number={},
+  abstract = {Despite decades of research on software diversification, only address space layout randomization 
+  has seen widespread adoption. Code randomization, an effective defense against return-oriented programming exploits, 
+  has remained an academic exercise mainly due to i) the lack of a transparent and streamlined deployment model 
+  that does not disrupt existing software distribution norms, and ii) the inherent incompatibility of program variants 
+  with error reporting, whitelisting, patching, and other operations that rely on code uniformity. 
+  In this work, we present compiler-assisted code randomization (CCR), a hybrid approach that relies on 
+  compiler–rewriter cooperation to enable fast and robust fine-grained code randomization on end-user systems, 
+  while maintaining compatibility with existing software distribution models. 
+  The main concept behind CCR is to augment binaries with a minimal set of transformation-assisting metadata, 
+  which i) facilitate rapid fine-grained code transformation at installation or load time, and 
+  ii) form the basis for reversing any applied code transformation when needed, to maintain compatibility with 
+  existing mechanisms that rely on referencing the original code. We have implemented a prototype of this approach 
+  by extending the LLVM compiler toolchain, and developing a simple binary rewriter that leverages the embedded metadata 
+  to generate randomized variants using basic block reordering. The results of our experimental evaluation demonstrate 
+  the feasibility and practicality of CCR, as on average it incurs a modest file size increase of 11.46% and 
+  a negligible runtime overhead of 0.28%, while it is compatible with link-time optimization and control flow integrity.},
+  pages={461-477},
+  doi={10.1109/SP.2018.00029},
+  selected={true},
+  bibtex_show={true},
+  pdf={sp18-ccr.pdf},
+  code={https://github.com/kevinkoo001/CCR},
+  slides={sp18-ccr-slides.pdf}
+}
+
+@InProceedings{rerand,
+author="Morton, Micah
+and Koo, Hyungjoon
+and Li, Forrest
+and Snow, Kevin Z.
+and Polychronakis, Michalis
+and Monrose, Fabian",
+editor="Bodden, Eric
+and Payer, Mathias
+and Athanasopoulos, Elias",
+title="Defeating Zombie Gadgets by Re-randomizing Code upon Disclosure",
+booktitle="Engineering Secure Software and Systems",
+year="2017",
+publisher="Springer International Publishing",
+address="Cham",
+pages="143--160",
+abstract="Over the past few years, return-oriented programming (ROP) attacks have emerged as 
+a prominent strategy for hijacking control of software. The full power and flexibility of ROP attacks 
+was recently demonstrated using just-in-time ROP tactics (JIT-ROP), whereby an adversary repeatedly 
+leverages a memory disclosure vulnerability to identify useful instruction sequences and compile them 
+into a functional ROP payload at runtime. Since the advent of just-in-time code reuse attacks, 
+numerous proposals have surfaced for mitigating them, the most practical of which involve the 
+re-randomization of code at runtime or the destruction of gadgets upon their disclosure. 
+Even so, several avenues exist for performing code inference, which allows JIT-ROP attacks 
+to infer values at specific code locations without directly reading the memory contents of those bytes. 
+This is done by reloading code of interest or implicitly determining the state of randomized code. 
+These so-called ``zombie gadgets'' completely undermine defenses that rely on destroying code bytes 
+once they are read. To mitigate these attacks, we present a low-overhead, binary-compatible defense 
+which ensures an attacker is unable to execute gadgets that were identified through code reloading or 
+code inference. We have implemented a prototype of the proposed defense for closed-source Windows binaries, 
+and demonstrate that our approach effectively prevents zombie gadget attacks with negligible runtime overhead.",
+isbn="978-3-319-62105-0",
+bibtex_show={true},
+pdf={essos17-rerand.pdf}
+}
+
+@INPROCEEDINGS{zombie-gadgets,
+  abbr={SP},
+  author={Snow, Kevin Z. and Rogowski, Roman and Werner, Jan and Koo, Hyungjoon and Monrose, Fabian and Polychronakis, Michalis},
+  booktitle={2016 IEEE Symposium on Security and Privacy (SP)}, 
+  title={Return to the Zombie Gadgets: Undermining Destructive Code Reads via Code Inference Attacks}, 
+  year={2016},
+  volume={},
+  number={},
+  pages={954-968},
+  abstract={The concept of destructive code reads is a new defensive strategy that prevents 
+  code reuse attacks by coupling fine-grained address space layout randomization with a mitigation 
+  for online knowledge gathering that destroys potentially useful gadgets as they are disclosed by an adversary. 
+  The intuition is that by destroying code as it is read, an adversary is left with no usable gadgets 
+  to reuse in a control-flow hijacking attack. In this paper, we examine the security of this new mitigation. 
+  We show that while the concept initially appeared promising, there are several unforeseen attack tactics 
+  that render destructive code reads ineffective in practice. Specifically, we introduce techniques 
+  for leveraging constructive reloads, wherein multiple copies of native code are loaded into a process' 
+  address space (either side-by-side or one-after-another). Constructive reloads allow the adversary 
+  to disclose one code copy, destroying it in the process, then use another code copy 
+  for their code reuse payload. For situations where constructive reloads are not viable, 
+  we show that an alternative, and equally powerful, strategy exists: leveraging code association 
+  via implicit reads, which allows an adversary to undo in-place code randomization by inferring 
+  the layout of code that follows already disclosed bytes. As a result, the implicitly learned code 
+  is not destroyed, and can be used in the adversary's code reuse attack. We demonstrate the effectiveness 
+  of our techniques with concrete instantiations of these attacks against popular applications. 
+  In light of our successes, we argue that the code inference strategies presented herein paint 
+  a cautionary tale for defensive approaches whose security blindly rests on the perceived inability 
+  to undo the application of in-place randomization.},
+  doi={10.1109/SP.2016.61},
+  bibtex_show={true},
+  pdf={sp16-heisenbite.pdf},
+}
+
+@inproceedings{juggling,
+abbr={ASIACCS},
+author = {Koo, Hyungjoon and Polychronakis, Michalis},
+title = {Juggling the Gadgets: Binary-Level Code Randomization Using Instruction Displacement},
+year = {2016},
+isbn = {9781450342339},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2897845.2897863},
+doi = {10.1145/2897845.2897863},
+abstract = {Code diversification is an effective mitigation against return-oriented programming attacks, 
+which breaks the assumptions of attackers about the location and structure of useful instruction sequences, 
+known as "gadgets". Although a wide range of code diversification techniques of varying levels of
+granularity exist, most of them rely on the availability of source code, debug symbols, or the assumption 
+of fully precise code disassembly, limiting their practical applicability for the protection of closed-source 
+third-party applications. In-place code randomization has been proposed as an alternative binary-compatible 
+diversification technique that is tolerant of partial disassembly coverage, in the expense though of leaving 
+some gadgets intact, at the disposal of attackers. Consequently, the possibility of constructing robust 
+ROP payloads using only the remaining non-randomized gadgets is still open. In this paper we present 
+instruction displacement, a code diversification technique based on static binary instrumentation that 
+does not rely on complete code disassembly coverage. Instruction displacement aims to improve 
+the randomization coverage and entropy of existing binary-level code diversification techniques 
+by displacing any remaining non-randomized gadgets to random locations. The results of 
+our experimental evaluation demonstrate that instruction displacement reduces the number of 
+non-randomized gadgets in the extracted code regions from 15.04% for standalone in-place code randomization, 
+to 2.77% for the combination of both techniques. At the same time, the additional indirection introduced 
+due to displacement incurs a negligible runtime overhead of 0.36% on average for the SPEC CPU2006 benchmarks.},
+booktitle = {Proceedings of the 11th ACM on Asia Conference on Computer and Communications Security},
+pages = {23–34},
+numpages = {12},
+keywords = {return-oriented programming, code diversification},
+location = {Xi'an, China},
+series = {ASIA CCS '16},
+bibtex_show={true},
+pdf={asiaccs16-disp.pdf},
+code={https://github.com/kevinkoo001/ropf},
+slides={aisaccs16-disp-slides.pdf}
+}
+
+@inproceedings{traffic-differentiation,
+author = {Molavi Kakhki, Arash and Razaghpanah, Abbas and Li, Anke and Koo, Hyungjoon and Golani, Rajesh and Choffnes, David and Gill, Phillipa and Mislove, Alan},
+title = {Identifying Traffic Differentiation in Mobile Networks},
+year = {2015},
+isbn = {9781450338486},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2815675.2815691},
+doi = {10.1145/2815675.2815691},
+abstract = {Traffic differentiation---giving better (or worse) performance to certain classes of 
+Internet traffic---is a well-known but poorly understood traffic management policy. There is 
+active discussion on whether and how ISPs should be allowed to differentiate Internet traffic, 
+but little data about current practices to inform this discussion. Previous work attempted 
+to address this problem for fixed line networks; however, there is currently no solution 
+that works in the more challenging mobile environment.In this paper, we present the design, 
+implementation, and evaluation of the first system and mobile app for identifying 
+traffic differentiation for arbitrary applications in the mobile environment 
+(i.e., wireless networks such as cellular and WiFi, used by smartphones and tablets). 
+The key idea is to use a VPN proxy to record and replay the network traffic generated 
+by arbitrary applications, and compare it with the network behavior when replaying 
+this traffic outside of an encrypted tunnel. We perform the first known testbed experiments 
+with actual commercial shaping devices to validate our system design and demonstrate 
+how it outperforms previous work for detecting differentiation. We released our app and 
+collected differentiation results from 12 ISPs in 5 countries. We find that differentiation 
+tends to affect TCP traffic (reducing rates by up to 60%) and that interference from middleboxes 
+(including video-transcoding devices) is pervasive. By exposing such behavior, 
+we hope to improve transparency for users and help inform future policies.},
+booktitle = {Proceedings of the 2015 Internet Measurement Conference},
+pages = {239–251},
+numpages = {13},
+keywords = {network neutrality, traffic differentiation, mobile networks},
+location = {Tokyo, Japan},
+series = {IMC '15},
+bibtex_show={true},
+pdf={imc15-traffic-diff.pdf}
 }

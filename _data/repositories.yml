@@ -1,12 +1,6 @@
 github_users:
-  - torvalds
-  - alshedivat
+  - kevinkoo001
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - SecAI-Lab/secai-lab.github.io
+  - kevinkoo001/CCR
