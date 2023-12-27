@@ -8,7 +8,7 @@ middle_name:
 last_name: Koo
 email: kevin.koo@skku.edu
 description: > # the ">" symbol means to ignore newlines until "footer_text:"																   
-footer_text: Powered by Hyungjoon Koo. Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
+footer_text: #Powered by Hyungjoon Koo. Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
 keywords: 
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon:   # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
