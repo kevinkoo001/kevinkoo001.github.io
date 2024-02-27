@@ -1,0 +1,48 @@
+"SP":
+  url: https://ieeexplore.ieee.org/xpl/conhome/1000646/all-proceedings
+  color: "#FF5733"
+
+"USENIX":
+  url: https://www.usenix.org/conferences/byname/108
+  color: "#FF5733"
+
+"CCS":
+  url: https://dl.acm.org/conference/ccs
+  color: "#FF5733"
+
+"NDSS":
+  url: https://www.ndss-symposium.org/
+  color: "#FF5733"
+
+"ACSAC":
+  url: https://www.acsac.org/
+  color: "#FFBD33"
+
+"RAID":
+  url: https://dl.acm.org/conference/raid
+  color: "#FFBD33"
+
+"ASIACCS":
+  url: https://dl.acm.org/conference/asia-ccs
+  color: "#FFBD33"
+
+"ICSE":
+  url: http://www.icse-conferences.org/
+  color: "#117864"
+
+"FSE":
+  url: https://dl.acm.org/conference/fse
+  color: "#117864"
+
+"Journal":
+  url: 
+  color: "green"
+
+"Conference":
+  url:
+  color: "red"
+
+"Workshop":
+  url:
+  color: "blue"
+

@@ -1,0 +1,101 @@
+{
+  "basics": {
+    "name": "Hyungjoon Koo",
+    "label": "Assistant Professor",
+    "image": "",
+    "email": "kevin.koo AT skku.edu",
+    "phone": "(031) 299-4958",
+    "url": "https://kevinkoo001.github.io/attic/",
+    "summary": "",
+    "location": {
+      "address": "",
+      "postalCode": "",
+      "city": "",
+      "countryCode": "KR",
+      "region": "South Korea"
+    },
+    "profiles": [
+      {
+        "network": "",
+        "username": "",
+        "url": ""
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "Sungkyunkwan University",
+      "position": "Assistant Professor",
+      "url": "https://example.com",
+      "startDate": "2021",
+      "endDate": "Now",
+      "summary": "",
+      "highlights": [
+        ""
+      ]
+    },
+    {
+      "name": "Georgia Tech",
+      "position": "Postdoctoral Researcher",
+      "url": "https://gts3.org/",
+      "startDate": "2019",
+      "endDate": "2020",
+      "summary": "Adviser: Taesoo Kim",
+      "highlights": [
+        ""
+      ]
+    }
+  ],
+  "volunteer": [],
+  "education": [
+    {
+      "institution": "Stony Brook University",
+      "url": "https://www.stonybrook.edu/",
+      "area": "Computer Science",
+      "studyType": "Ph.D.",
+      "startDate": "2013",
+      "endDate": "2019",
+      "score": "",
+      "summary": "Adviser: Michalis Polychronakis",
+      "courses": [
+        ""
+      ]
+    },
+    {
+      "institution": "Korea University",
+      "url": "https://www.stonybrook.edu/",
+      "area": "Information Security",
+      "studyType": "MS.",
+      "startDate": "2008",
+      "endDate": "2010",
+      "score": "",
+      "courses": [
+        ""
+      ]
+    }
+  ],
+  "services": [
+    {
+      "title": "Program Committee",
+      "date": "1921-11-01",
+      "awarder": "Royal Swedish Academy of Sciences",
+      "summary": "The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'"
+    }
+  ],
+  "certificates": [],
+  "publications": [],
+  "skills": [],
+  "languages": [
+    {
+      "language": "Korean",
+      "fluency": "Native speaker"
+    },
+    {
+      "language": "English",
+      "fluency": "Fluent"
+    }
+  ],
+  "interests": [],
+  "references": [],
+  "projects": []
+}
