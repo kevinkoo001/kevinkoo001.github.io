@@ -1,0 +1,514 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>Dynamic Linking in ELF | Hyungjoon (Kevin) Koo</title> <meta name="author" content="Hyungjoon Koo"> <meta name="description" content=""> <link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css"> <link rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons"> <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?19f3075a2d19613090fe9e16b564e1fe" media="" id="highlight_theme_light"> <link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e"> <link rel="canonical" href="https://kevinkoo001.github.io/blog/2016/dynamic-linking-in-elf/"> <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?e74e74bf055e5729d44a7d031a5ca6a5" media="none" id="highlight_theme_dark"> <script src="/assets/js/theme.js?96d6b3e1c3604aca8b6134c7afdd5db6"></script> <script src="/assets/js/dark_mode.js?9b17307bb950ffa2e34be0227f53558f"></script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/">Hyungjoon (Kevin) Koo</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">About</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">Blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/publications/">Publications</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">CV</a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5"> <div class="post"> <header class="post-header"> <h1 class="post-title">Dynamic Linking in ELF</h1> <p class="post-meta">November 11, 2016• kevinkoo001@gmail.com</p> <p class="post-tags"> <a href="/blog/2016"> <i class="fas fa-calendar fa-sm"></i> 2016 </a>   ·   <a href="/blog/category/miscellaneous-stuff"> <i class="fas fa-tag fa-sm"></i> Miscellaneous Stuff</a>   </p> </header> <article class="post-content"> <div id="markdown-content"> <p>ELF is the binary format that allows for being both executable and linkable. It is de-facto standard in Linux.</p> <p><strong>A. Linking Overview</strong></p> <p>As the size of the program functionality grows, modulization helps programmers to maintain their code with efficiency. During compilation, an object file is generated per module. Afterwards, a linker (i.e., <em>ld</em> or <em>ld.gold</em>) takes one or more object files and combines them into a single executable file, library file, or another object file. A linker plays an pivotal role to resolve the locations like re-targeting absolute jumps.</p> <p>An object file contains a symbol - a primitive datatype to be identified - that references another object file in nature. There are two symbol kinds: local symbols and external symbols. A local symbol resides in the same object file (often for the relocation purpose at linking time). For the latter, if an external symbol is defined inside the object file it can be called from other modules. If undefined, it requires to find the symbol to which references. The referenced symbol can be located in either another object file or a library file, a collection of object files that can be shared by other executables.</p> <p>A library can be static or dynamic. If an application employs a symbol in a static library (.a extension), the compiler directly merges the object file that contains the symbol with a final executable. When the object file contains another symbol in another object file, it should be resolved and combined at compilation time as well although the object file is not required by the original program. In case of a dynamic library (shared object or .so extension), the final executable does not embed the object file. Instead, it delays the resolution of undefined symbols until runtime and lets a dynamic linker do its job. Hence, a statically linked executable can run itself without a library at runtime whereas a dynamically linked one cannot.</p> <p>Here we demystify how dynamic linking works with a simple example for the shared object or position independent code (-fPIC option in a gcc and clang) in x86_64 (AKA AMD64).</p> <p><strong>B. Sample Program</strong></p> <p>Here is a tiny source code that has two modules (<em>test.c</em> and <em>func.c</em>) and one header file (<em>func.h</em>). </p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// test.c
+#include &lt;stdio.h&gt;
+#include "func.h"
+
+void calc(int x, int y) {
+        printf("x + y = %d\n", add(x, y));
+        printf("x - y = %d\n", sub(x, y));
+}
+
+int main(void) {
+        int a = 10;
+        int b = 7;
+        calc(10, 7);
+        return 0;
+}
+
+// func.c
+#include "func.h"
+
+int add(int x, int y) {
+        int a = x;
+        int b = y;
+        return a + b;
+}
+
+
+int sub(int x, int y) {
+        int a = x;
+        int b = y;
+        return a - b;
+}
+
+// func.h 
+extern int add(int, int);
+extern int sub(int, int);
+extern void calc(int, int);
+
+// Compile the files above with clang
+// $ clang -o main func.c calc.c
+</code></pre></div></div> <p><strong>C. ELF Header and Tables for Program Header and Section Header</strong></p> <p>ELF consists of three parts: ELF Header, Program Header Table and Section Header Table. </p> <p>First off, ELF header is quite self-explantionary with the defined struct itself in <em>Elf64_Ehdr</em>. See the comments below.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># define ELF_NIDENT      16
+ 
+typedef struct {
+        uint8_t         e_ident[ELF_NIDENT]; // ELF Identification: See [a]
+        Elf32_Half      e_type;      // Object File Type: See [b]
+        Elf32_Half      e_machine;   // Required Architecture
+        Elf32_Word      e_version;   // Object Version
+        Elf32_Addr      e_entry;     // Entry Point VA*
+        Elf32_Off       e_phoff;     // Program Header Offset
+        Elf32_Off       e_shoff;     // Section Header Offset
+        Elf32_Word      e_flags;     // Processor-Specific Flags
+        Elf32_Half      e_ehsize;    // ELF Header Size in Bytes
+        Elf32_Half      e_phentsize; // Size of each Program Header Entry
+        Elf32_Half      e_phnum;     // Number of Program Headers
+        Elf32_Half      e_shentsize; // Size of each Section Header Entry
+        Elf32_Half      e_shnum;     // Number of Section Headers
+        Elf32_Half      e_shstrndx;  // Section Header String Table Index 
+}
+Elf64_Ehdr;
+
+// [a] Elf_Ident Enum
+enum Elf_Ident {
+        EI_MAG0         = 0, // 0x7F
+        EI_MAG1         = 1, // 'E'
+        EI_MAG2         = 2, // 'L'
+        EI_MAG3         = 3, // 'F'
+        EI_CLASS        = 4, // Architecture (32/64)
+        EI_DATA         = 5, // Byte Order: ELFDATA2LSB=0x1, ELFDATA2MSB=0x2
+        EI_VERSION      = 6, // File Version
+        EI_OSABI        = 7, // OS Specific
+        EI_ABIVERSION   = 8, // OS Specific
+        EI_PAD          = 9  // Padding (Unused)
+};
+ 
+# define ELFMAG0      0x7F // e_ident[EI_MAG0]
+# define ELFMAG1      'E'  // e_ident[EI_MAG1]
+# define ELFMAG2      'L'  // e_ident[EI_MAG2]
+# define ELFMAG3      'F'  // e_ident[EI_MAG3]
+# define ELFDATA2LSB  (1)  // Little Endian
+# define ELFCLASS64   (1)  // 64-bit Architecture
+
+// [b] Elf_type structure
+enum Elf_Type {
+        ET_NONE         = 0, // Unkown Type
+        ET_REL          = 1, // Relocatable File
+        ET_EXEC         = 2  // Executable File
+        ET_DYN          = 3  // Shared Object File
+        ET_CORE         = 4  // Core File
+        ET_LOPROC       = 0xff00  // Processor-Specific
+        ET_HIPROC       = 0xffff  // Processor-Specific 
+};
+</code></pre></div></div> <p>The program header table (PHT) describes how a loader maps the binary into virtual address space (or VA) when loading, whereas the section header table (SHT) has the entries of each defined section header when linking. Each mapped region in VA by a PHT entry is often called a segment from a loader view. As is a section by a SHT entry from a linker view.</p> <p>The final executable file <em>main</em> is shown as following (Figure 1). The linker view on the left shows how each section is stored as a file at offline. The loader view on the right shows how each segment is loaded as a process at runtime. For instance, [S1] is the first section whose size is 0x1c with (A)llocatable by a loader. R, X and W denote readable, executable and writable respectively. On a loader view, there are four major chucks of memory: 0x400000-0x401000 (RX), 0x401000-0x402000 (RW), regions for shared objects and the space for stack and heap.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Figure 1&gt;
+                &lt;Linker View&gt;                               &lt;Loader View&gt;
+                
+FileOffset                                  VirtualAddr  LOAD (SZ=0x1000)
+          .-----------------------------. ------------&gt; .------------------.
+   0x0000 |  ELF Header                 |      0x400000 |  ELF_HDR (R)     |
+          .-----------------------------.               |------------------|
+   0x0040 |  Program Header Table       |      0x400040 |  PHDR (R)        |
+          |                             |               |                  |
+          |                             |               |                  |
+          |                             |               |                  |
+          |                             |               |                  |
+          .-----------------------------.               |------------------|
+   0x0200 | [S1] .interp (0x1c) A       |      0x400200 |  INTERP (R)      |
+          .-----------------------------.               |------------------|
+   0x021c | [S2] .note.ABI-tag (0x20) A |               |  (RX)            |
+          .-----------------------------.               |                  |
+   0x0240 | [S3] .dynsym (0xa8) A       |               |                  |
+          .-----------------------------.               |                  |
+   0x02e8 | [S4] .dynstr (0x89) A       |               |                  |
+          .-----------------------------.               |                  |
+   0x0378 | [S5] .hash (0x30) A         |               |                  |
+          .-----------------------------.               |                  |
+   0x03a8 | [S6] .gnu.version (0xe) A   |               |                  |
+          .-----------------------------.               |                  |
+   0x03b8 | [S7] .gnu.version_r (0x20) A|               |                  |
+          .-----------------------------.               |                  |
+   0x03d8 | [S8] .rela.dyn (0x18) A     |               |                  |
+          .-----------------------------.               |                  |
+   0x03f0 | [S9] .rela.plt (0x48) AI    |               |                  |
+          .-----------------------------. ------------&gt; |------------------|
+   0x0438 | [S10] .init (0x1a) AX       |               |                  |
+          .-----------------------------.               |                  |
+   0x0460 | [S11] .plt (0x40) AX        |               |                  |
+          .-----------------------------.               |                  |
+   0x04a0 | [S12] .text (0xa8) AX       |               |                  |
+          |                             |               |                  |
+          .-----------------------------.               |                  |
+   0x06f4 | [S13] .fini (0x9) AX        |               |                  |
+          .-----------------------------. ------------&gt; |------------------|
+   0x0700 | [S14] .rodata (0x1c) AMS    |               |                  |
+          .-----------------------------.               |                  |
+   0x0720 | [S15] .eh_frame (0xd4) A    |               |                  |
+          .-----------------------------.               |                  |
+   0x07f4 | [S16] .eh_frame_hdr (0x2c) A|               |                  |
+          .-----------------------------. ------------&gt; .------------------.
+   0x0820 | [S17] .dynamic (0x1d) WA    |    |
+          |                             |    |          LOAD (SZ=0x1000)
+          .-----------------------------.    |          .------------------.
+   0x09f0 | [S18] .got (0x8) WA         |    | 0x401000 |                  |
+          .-----------------------------.    \--------&gt; .------------------.
+   0x09f8 | [S19] .got.plt (0x30) WA    |      0x401820 |  (RW)            |
+          .-----------------------------.               |                  |
+   0x0a28 | [S20] .data (0x10) WA       |               |                  |
+          .-----------------------------.               |                  |
+   0x0a38 | [S21] .jcr (0x8) WA         |               |                  |
+          .-----------------------------.               |                  |
+   0x0a40 | [S22] .tm_clone_tbl (0x0)WA |               |                  |
+          .-----------------------------.               |                  |
+   0x0a40 | [S23] .fini_array (0x8) WA  |               |                  |
+          .-----------------------------.               |                  |
+   0x0a48 | [S24] .init_array (0x8) WA  |               |                  |
+          .-----------------------------.               |                  |
+   0x0a50 | [S25] .bss (0x4) WA         |      0x401a50 |                  |
+          .-----------------------------. ---&gt; 0x402000 .------------------.
+   0x0a50 | [S26] .comment (0x62) MS    | \
+          .-----------------------------. |             .------------------.
+   0x0ab4 | [S27] .note.gnu.gold (0x1c) | | 7ffff7a0e000|  Shared Objects  |
+          .-----------------------------. |             |  libc, ld, ...   |
+   0x0ad0 | [S28] .symtab (0x408)       | |             |                  |
+          .-----------------------------. |             .------------------.
+   0x0ed8 | [S29] .strtab (0x23f)       | | 
+          .-----------------------------. | No mapping in a virtual address
+   0x1117 | [S30] .shstrtab (0x118)     | |
+          .-----------------------------. |             .------------------.
+   0x1230 |  Section Header Table       | |             |  Heap            |
+          |   Entry [S0] NULL           | |             |                  |
+          |   Entry [S1] .interp        | |             |                  |
+          |         .....               | | 7ffffffde000|  Stack           |
+          |   Entry [S30] .shstrtab     | |             .------------------.
+   0x19f0 .-----------------------------./
+</code></pre></div></div> <p>A friendly ‘<em>readelf</em>’ command illustrates what each segment and section look like by reading the structure. Note that there are a lot of sections appended during compilation. </p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Section to Segment mapping:
+Segment Sections...
+00
+01     .interp
+02     .interp .note.ABI-tag .dynsym .dynstr .hash .gnu.version .gnu.version_r .rela.dyn .rela.plt .init .plt .text .fini .rodata .eh_frame .eh_frame_hdr
+03     .dynamic .got .got.plt .data .jcr .tm_clone_table .fini_array .init_array .bss
+04     .dynamic
+05     .note.ABI-tag
+06     .eh_frame_hdr
+07
+
+// Section Headers:
+  [Nr] Name              Type             Address           Offset
+       Size              EntSize          Flags  Link  Info  Align
+  [ 0]                   NULL             0000000000000000  00000000
+       0000000000000000  0000000000000000           0     0     0
+  [ 1] .interp           PROGBITS         0000000000400200  00000200
+       000000000000001c  0000000000000000   A       0     0     1
+  [ 2] .note.ABI-tag     NOTE             000000000040021c  0000021c
+       0000000000000020  0000000000000000   A       0     0     4
+  [ 3] .dynsym           DYNSYM           0000000000400240  00000240
+       00000000000000a8  0000000000000018   A       4     1     8
+  [ 4] .dynstr           STRTAB           00000000004002e8  000002e8
+       0000000000000089  0000000000000000   A       0     0     1
+  [ 5] .hash             HASH             0000000000400378  00000378
+       0000000000000030  0000000000000004   A       3     0     8
+  [ 6] .gnu.version      VERSYM           00000000004003a8  000003a8
+       000000000000000e  0000000000000002   A       3     0     2
+  [ 7] .gnu.version_r    VERNEED          00000000004003b8  000003b8
+       0000000000000020  0000000000000000   A       4     1     4
+  [ 8] .rela.dyn         RELA             00000000004003d8  000003d8
+       0000000000000018  0000000000000018   A       3     0     8
+  [ 9] .rela.plt         RELA             00000000004003f0  000003f0
+       0000000000000048  0000000000000018  AI       3    11     8
+  [10] .init             PROGBITS         0000000000400438  00000438
+       000000000000001a  0000000000000000  AX       0     0     4
+  [11] .plt              PROGBITS         0000000000400460  00000460
+       0000000000000040  0000000000000010  AX       0     0     16
+  [12] .text             PROGBITS         00000000004004a0  000004a0
+       0000000000000252  0000000000000000  AX       0     0     16
+  [13] .fini             PROGBITS         00000000004006f4  000006f4
+       0000000000000009  0000000000000000  AX       0     0     4
+  [14] .rodata           PROGBITS         0000000000400700  00000700
+       000000000000001c  0000000000000000 AMS       0     0     4
+  [15] .eh_frame         PROGBITS         0000000000400720  00000720
+       00000000000000d4  0000000000000000   A       0     0     8
+  [16] .eh_frame_hdr     PROGBITS         00000000004007f4  000007f4
+       000000000000002c  0000000000000000   A       0     0     4
+  [17] .dynamic          DYNAMIC          0000000000401820  00000820
+       00000000000001d0  0000000000000010  WA       4     0     8
+  [18] .got              PROGBITS         00000000004019f0  000009f0
+       0000000000000008  0000000000000000  WA       0     0     8
+  [19] .got.plt          PROGBITS         00000000004019f8  000009f8
+       0000000000000030  0000000000000000  WA       0     0     8
+  [20] .data             PROGBITS         0000000000401a28  00000a28
+       0000000000000010  0000000000000000  WA       0     0     8
+  [21] .jcr              PROGBITS         0000000000401a38  00000a38
+       0000000000000008  0000000000000000  WA       0     0     8
+  [22] .tm_clone_table   PROGBITS         0000000000401a40  00000a40
+       0000000000000000  0000000000000000  WA       0     0     8
+  [23] .fini_array       FINI_ARRAY       0000000000401a40  00000a40
+       0000000000000008  0000000000000000  WA       0     0     8
+  [24] .init_array       INIT_ARRAY       0000000000401a48  00000a48
+       0000000000000008  0000000000000000  WA       0     0     8
+  [25] .bss              NOBITS           0000000000401a50  00000a50
+       0000000000000004  0000000000000000  WA       0     0     4
+  [26] .comment          PROGBITS         0000000000000000  00000a50
+       0000000000000062  0000000000000001  MS       0     0     1
+  [27] .note.gnu.gold-ve NOTE             0000000000000000  00000ab4
+       000000000000001c  0000000000000000           0     0     4
+  [28] .symtab           SYMTAB           0000000000000000  00000ad0
+       0000000000000408  0000000000000018          29    22     8
+  [29] .strtab           STRTAB           0000000000000000  00000ed8
+       000000000000023f  0000000000000000           0     0     1
+  [30] .shstrtab         STRTAB           0000000000000000  00001117
+       0000000000000118  0000000000000000           0     0     1
+
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), l (large)
+  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
+  O (extra OS processing required) o (OS specific), p (processor specific)
+</code></pre></div></div> <p><strong>D.  Linking process</strong></p> <p>Before moving on, here is what the object looks like (in <em>crt1.o</em>). The relocation record shows that there are four locations that cannot be resolved while compilation process. That is why the 4-byte address is empty filled with 0x0s. The first relocation entry at offset 12 has the reference of <em>__libc_csu_fini</em>, defined in another object. We can see that <em>_start</em> function actually calls our <em>main</em> function at offset 0x20, the entry point of the final executable.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0000000000000000 &lt;_start&gt;:
+   0:   31 ed                   xor    ebp,ebp
+   2:   49 89 d1                mov    r9,rdx
+   5:   5e                      pop    rsi
+   6:   48 89 e2                mov    rdx,rsp
+   9:   48 83 e4 f0             and    rsp,0xfffffffffffffff0
+   d:   50                      push   rax
+   e:   54                      push   rsp
+   f:   49 c7 c0 00 00 00 00    mov    r8,0x0
+  16:   48 c7 c1 00 00 00 00    mov    rcx,0x0
+  1d:   48 c7 c7 00 00 00 00    mov    rdi,0x0
+  24:   e8 00 00 00 00          call   29 &lt;_start+0x29&gt;
+  29:   f4                      hlt
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET           TYPE              VALUE
+0000000000000012 R_X86_64_32S      __libc_csu_fini
+0000000000000019 R_X86_64_32S      __libc_csu_init
+0000000000000020 R_X86_64_32S      main
+0000000000000025 R_X86_64_PC32     __libc_start_main-0x0000000000000004
+</code></pre></div></div> <p>Now, when the given program is compiled by default, <em>gcc</em> or <em>clang</em> driver combines necessary files (i.e., CRT) to allow a loader to handle it properly.  The Figure 2 illustrates them. (*) means the function is defined in the object file, whereas others are declared outside of the file. (i.e., using <em>extern</em> keyword in C) For example, crt1.o defines <em>_start _in the file  but the function ___libc_start_main</em> has to be resolved in a linking time (or maybe later).</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Figure 2&gt;
+.-------------------.-----------------------.---------------------------.----------.
+| crt1.o            | cri.o                 | crtbegin.o                | crtn.o   |
+.-------------------|-----------------------|---------------------------.----------.
+| _start*           | __init*               | deregister_tm_clones *    | .init    |
+| __libc_csu_fini   | __fini*               | register_tm_clones *      | .fini    |
+| __libc_csu_init   | __gmon_start          | __do_global_dtors_aux *   |          |
+| __libc_start_main | _GLOBAL_OFFSET_TABLE_ | frame_dummy *             |          |
+|                   |                       | __TMC_END__               |          |
+|                   |                       | _ITM_deregisterTMCloneTab |          |
+|                   |                       | _ITM_registerTMCloneTable |          |
+|                   |                       | _Jv_RegisterClasses       |          |
+.-------------------------------------------.---------------------------.----------.
+| libc.a                         | crtend.o | func.o                    | test.o   |
+.--------------------------------.----------.---------------------------.----------.
+| __libc_csu_fini (elf-init.o) * | NONE     | add *                     | calc *   |
+| __libc_csu_init (elf-init.o) * |          | sub *                     | main *   |
+| printf (printf.o) *            |          |                           | add      |
+|                                |          |                           | printf   |
+|                                |          |                           | sub      |
+.--------------------------------.----------.---------------------------.----------.
+</code></pre></div></div> <p>Let’s see the layout of all functions from each object file. Figure 3 is part of sections from 10 to 13 in Figure 1. Interesting enough, the layout of all functions in a single object file is not inter-mixed.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Figure 3&gt;
+         |          ...           |
+         |========================|
+   .init | _init_proc             |  __init (cri.o) + .init (crtn.o)
+         |========================|
+   .plt  | __libc_start_main      | \ The addresses will be resolved 
+         | __gmon_start__         | | at runtime by dynamic linker,
+         | _printf                | | the .plt entry is fixed up 
+         |========================| / when each function is invoked.
+   .text | _start                 |   crt1.o
+         |------------------------| \
+         | deregister_tm_clones   | |
+         | register_tm_clones     | | crtbegin.o
+         | __do_global_dtors_aux  | |
+         | frame_dummy            | |
+         |------------------------| /
+         | calc                   | \
+         | main                   | | test.o
+         |------------------------| /
+         | add                    | \
+         | sub                    | | func.o
+         |------------------------| /
+         | __libc_csu_init        | \
+         | __libc_csu_fini        | | libc.a (included in a binary)
+         |========================| /
+    .fini| _term_proc             | __fini (cri.o) + .fini (crtn.o)
+         |========================|
+         |          ...           |
+</code></pre></div></div> <p><strong>E. Dynamic Linking</strong></p> <p>When dynamic linking is required (modern compiler set it by default), a compiler generates .<em>dynamic</em> section (section index 17 above). Note that executable files and shared object files have a separate procedure linkage table (PLT).</p> <p>With the sample we have, the dynamic section contains 24 entries as following. Pay attention to the highlighted, which are required by dynamic linker. The section .<em>plt.got (PLTGOT)</em> is the very place that the final fix-ups are stored by dynamic linker. The <em>.rela.plt</em> (JMPREL) and <em>.rela.dyn</em> (RELA) are the relocation section tables that describe relocation entries.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Dynamic section at offset 0x820 contains 24 entries:
+  Tag        Type                    Name/Value
+ 0x0000000000000003 (PLTGOT)        0x4019f8      // address of .plt.got section
+ 0x0000000000000002 (PLTRELSZ)      72 (bytes)    // size of .plt.got section
+ 0x0000000000000017 (JMPREL)        0x4003f0      // address of .rela.plt section
+ 0x0000000000000014 (PLTREL)        RELA          // relocation type (REL / RELA)
+ 0x0000000000000007 (RELA)          0x4003d8      // address of .rela.dyn section
+ 0x0000000000000008 (RELASZ)        24 (bytes)    // total size of .rela.dyn section
+ 0x0000000000000009 (RELAENT)       24 (bytes)    // size of an entry in .rela.dyn section
+ 0x0000000000000015 (DEBUG)         0x0
+ 0x0000000000000006 (SYMTAB)        0x400240      // address of .symtab section
+ 0x000000000000000b (SYMENT)        24 (bytes)    // size of an entry in .symtab section
+ 0x0000000000000005 (STRTAB)        0x4002e8      // address of .strtab section
+ 0x000000000000000a (STRSZ)         137 (bytes)   // size of .strtab section
+ 0x0000000000000004 (HASH)          0x400378      // address of hash section
+ 0x0000000000000001 (NEEDED)        Shared library: [libc.so.6] 
+ 0x000000000000000c (INIT)          0x400438      // address of .init section
+ 0x000000000000000d (FINI)          0x4006f4      // address of .fini section
+ 0x000000000000001a (FINI_ARRAY)    0x401a40      // address of .fini_array section
+ 0x000000000000001c (FINI_ARRAYSZ)  8 (bytes)     // size of ._fini_array
+ 0x0000000000000019 (INIT_ARRAY)    0x401a48      // address of .init_array section
+ 0x000000000000001b (INIT_ARRAYSZ)  8 (bytes)     // size of ._fini_array
+ 0x000000006ffffff0 (VERSYM)        0x4003a8      // address of .gnu.version section
+ 0x000000006ffffffe (VERNEED)       0x4003b8      // address of .gnu.version_r section
+ 0x000000006fffffff (VERNEEDNUM)    1             // number of needed versions
+ 0x0000000000000000 (NULL)          0x0           // end of .dynamic section
+</code></pre></div></div> <p>Here are the symbols in relocation sections. The type “<em>R_X86_64_JUMP_SLOT</em>” means these symbols need to be resolved at runtime by dynamic linker. The offset is the location that resolved reference has to be stored.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Relocation section '.rela.dyn' at offset 0x3d8 contains 1 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+0000004019f0  000300000006 R_X86_64_GLOB_DAT 0000000000000000 __gmon_start__ + 0
+
+Relocation section '.rela.plt' at offset 0x3f0 contains 3 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000401a10  000200000007 R_X86_64_JUMP_SLO 0000000000000000 __libc_start_main@GLIBC_2.2.5 + 0
+000000401a18  000300000007 R_X86_64_JUMP_SLO 0000000000000000 __gmon_start__ + 0
+000000401a20  000100000007 R_X86_64_JUMP_SLO 0000000000000000 printf@GLIBC_2.2.5 + 0
+</code></pre></div></div> <p>The Figure 4 (before resolution) and 5 (after resolution) illustrate how dynamic linker resolves the references on the fly. With disassembly, three symbols are called at 0x400448, 0x4004c4 and 0x4005c7. At first, they are supposed to jump to somewhere in PLT. Again, another jump instruction in PLT corresponds to somewhere in a <em>.got.plt</em>. The value in <em>.got.plt</em> has the address of next instruction in <em>.plt</em> that has pointed to itself (+6).</p> <p>For example, the address of <em>printf@plt</em> is 0x400490, and it jumps to 0x400496 after dereferencing (rip+0x158a is 0x401a20, and 0x400496 is stored in there). Then it pushes 0x2 and jumps to <em>.plt</em> table.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Figure 4&gt;
+
+      .text                           .plt &lt;--------------------------------------\
+      .-------------------.           .---------------------------.               |
+4004a0|                   |     400460|   pushq [rip+0x159a]      | &lt;_GOT+8&gt;      |
+      |                   |           |---------------------------|               |
+      |                   |           |   jmpq  [rip+0x159c]      | &lt;_GOT+16&gt;     |
+      |-------------------|           |---------------------------|               |
+400448| call &lt;__gmon_     |     400470|   jmpq  [rip+0x159a]      | &lt;__libc_..@ --|--\
+      |  start__@plt&gt;     | /-------&gt; |   push  0x0               |  got.plt&gt;     |  |
+      |-------------------| |         |   jmp   0x400460          | --------------|  |
+      |-------------------| |         |---------------------------|               |  |
+4004c4| call &lt;__libc_     | |   400480|   jmpq  [rip+0x1592]      | &lt;__gmon_..@ --|--|--\
+      |  start_main@plt&gt;  | | /-----&gt; |   push  0x1               |  got.plt      |  |  |
+      |-------------------| | |       |   jmp   0x400460          |---------------|  |  |
+      |-------------------| | |       |---------------------------|               |  |  |
+4005c7| call &lt;printf@plt&gt; | | | 400490|   jmpq  [rip+0x158a]      | &lt;printf@ -----|--------\
+      |-------------------| | | /---&gt; |   push  0x2               |  got.plt&gt;     |  |  |  |
+      |                   | | | |     |   jmp   0x400460          | -------------/   |  |  |
+      |                   | | | |     .---------------------------.                  |  |  |
+      |                   | | | |       &lt;Procedure Linkage Table&gt;                    |  |  |
+      |                   | | | |                                                    |  |  |
+      |                   | | | |     .got                                           |  |  |
+      .-------------------. | | |     .---------------------------.                  |  |  |
+                            | | |     |            0x0            |4019f0            |  |  |
+      .got.plt sec_hdr      | | |     |---------------------------|                  |  |  |
+      .-------------------. | | |     |   (.dynamic) 0x0401820    |4019f8            |  |  |
+      | PLTGOT            | | | |     .---------------------------.                  |  |  |
+      |                   | | | |          &lt;Global Offset Table&gt;                     |  |  |
+      |                   | | | |                                                    |  |  |
+      |                   | | | |                                                    |  |  |
+      |                   | | | |     .got.plt                                       |  |  |
+      |                   | | | |     .---------------------------.                  |  |  |
+      .-------------------. | | |     |           0x0             |401a00            |  |  |
+                            | | |     |           0x0             |401a08            |  |  |
+      .rela.plt sec_hdr     \-|-|---- |         0x400476          |401a10 &lt;----------/  |  |
+      .-------------------.   \-|---- |         0x400486          |401a18 &lt;-------------/  |
+      | JMPREL            |     \---- |         0x400496          |401a20 &lt;----------------/
+      |   r_offset        |           .---------------------------.
+      |   r_info          | &lt;-- R_X86_64_JUMP_SLO type
+      |   r_addend        |           
+      .-------------------.      
+</code></pre></div></div> <p>Here is the snapshot after the resolution of <strong><em>libc_start_main</em> and <em>printf</em> at <em>glibc</em>. The code for </strong><em>gmon_start</em>__ is already in the final executable. (thus 0x400486). At this point, all references are successfully resolved by dynamic linker. Note that the reference is resolved only once when it is called for the first time. </p> <p>The address of the routine for the resolution is stored at 0x401a08, which is <em>dl_runtime_resolve_avx</em> in this example.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Figure 5&gt;
+      .text                               .plt &lt;--------------------------------------\
+      .-------------------.               .---------------------------.               |
+4004a0|                   |         400460|   pushq [rip+0x159a]      | &lt;_GOT+8&gt;      |
+      |                   |               |---------------------------|               |
+      |                   |               |   jmpq  [rip+0x159c]      | &lt;_GOT+16&gt;     |
+      |-------------------|               |---------------------------|               |
+400448| call &lt;__gmon_     |  /----&gt; 400470|   jmpq  [rip+0x159a]      | &lt;__libc_..@ --|--\
+      |  start__@plt&gt;     |--|\           |   push  0x0               |  got.plt&gt;     |  |
+      |-------------------|  ||           |   jmp   0x400460          | --------------|  |
+      |-------------------|  ||           |---------------------------|               |  |
+4004c4| call &lt;__libc_     | -/\---&gt; 400480|   jmpq  [rip+0x1592]      | &lt;__gmon_..@ --|--|--\
+      |  start_main@plt&gt;  |               |   push  0x1               |  got.plt      |  |  |
+      |-------------------|               |   jmp   0x400460          |---------------|  |  |
+      |-------------------|               |---------------------------|               |  |  |
+4005c7| call &lt;printf@plt&gt; | ------&gt; 400490|   jmpq  [rip+0x158a]      | &lt;printf@ -----|--------\
+      |-------------------|               |   push  0x2               |  got.plt&gt;     |  |  |  |
+      |                   |               |   jmp   0x400460          | -------------/   |  |  |
+      |                   |               .---------------------------.                  |  |  |
+      |                   |                 &lt;Procedure Linkage Table&gt;                    |  |  |
+      |                   |                                                              |  |  |
+      |                   |               .got                                           |  |  |
+      .-------------------.               .---------------------------.                  |  |  |
+                                          |            0x0            |4019f0            |  |  |
+      .got.plt sec_hdr                    |---------------------------|                  |  |  |
+      .-------------------.               |    (.dynamic) 0x0401820   |4019f8            |  |  |
+      | PLTGOT            |               .---------------------------.                  |  |  |
+      |                   |                    &lt;Global Offset Table&gt;                     |  |  |
+      |                   |                                                              |  |  |
+      |                   |           /-- [dl_runtime_resolve_avx] &lt;------------\        |  |  |
+      |                   |           |   .got.plt                              |        |  |  |
+      |                   |           \-&gt; .---------------------------.         |        |  |  |
+      .-------------------.               |    0x00007ffff7ffe168     |401a00   |        |  |  |
+                                          |    0x00007ffff7dee6a0     |401a08 --/        |  |  |
+      .rela.plt sec_hdr                   |    0x00007ffff7a2e740     |401a10 &lt;----------/  |  |
+      .-------------------.               |    0x0000000000400486     |401a18 &lt;-------------/  |
+      | JMPREL            |               |    0x00007ffff7a637b0     |401a20 &lt;----------------/
+      |   r_offset        |               .---------------------------.
+      |   r_info          |     &lt;-- R_X86_64_JUMP_SLO type
+      |   r_addend        |               
+      .-------------------.                   
+</code></pre></div></div> <p>For more curious readers, here are the source files from glibc that defines <em>__dl_runtime_resolve</em> and <em>_dl_fixup</em> internally. With several breakpoints in debugging, the routine stores the <em>link_map</em> at <em>%rdi</em> register and the <em>reloc_index</em> at <em>%rsi</em> register. This index is the very one pushed in <em>.plt</em> section.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#define __dl_runtime_resolve at sysdeps/i386/dl-trampoline.S in the glibc-2.24
+In sysdeps/x86_64/dl-trampoline.h, line 64
+        # Copy args pushed by PLT in register.
+        # %rdi: link_map, %rsi: reloc_index
+        mov (LOCAL_STORAGE_AREA + 8)(%BASE), %RSI_LP (a)
+        mov LOCAL_STORAGE_AREA(%BASE), %RDI_LP (b)
+        call _dl_fixup          # Call resolver. (c)
+        mov %RAX_LP, %R11_LP    # Save return value (d)
+        
+In sysdeps/elf/dl-runtime.c, line 66
+    DL_FIXUP_VALUE_TYPE _dl_fixup (
+           # ifdef ELF_MACHINE_RUNTIME_FIXUP_ARGS 
+           ELF_MACHINE_RUNTIME_FIXUP_ARGS, # endif
+           struct link_map *l, ElfW(Word) reloc_arg) 
+
+gdb-peda$ x/30i 0x00007ffff7dee6a0
+   0x7ffff7dee6a0 &lt;_dl_runtime_resolve_avx&gt;:    push   rbx
+   0x7ffff7dee6a1 &lt;_dl_runtime_resolve_avx+1&gt;:  mov    rbx,rsp
+   0x7ffff7dee6a4 &lt;_dl_runtime_resolve_avx+4&gt;:  and    rsp,0xffffffffffffffe0
+   0x7ffff7dee6a8 &lt;_dl_runtime_resolve_avx+8&gt;:  sub    rsp,0x180
+   0x7ffff7dee6af &lt;_dl_runtime_resolve_avx+15&gt;: mov    QWORD PTR [rsp+0x140],rax
+   0x7ffff7dee6b7 &lt;_dl_runtime_resolve_avx+23&gt;: mov    QWORD PTR [rsp+0x148],rcx
+   0x7ffff7dee6bf &lt;_dl_runtime_resolve_avx+31&gt;: mov    QWORD PTR [rsp+0x150],rdx
+   0x7ffff7dee6c7 &lt;_dl_runtime_resolve_avx+39&gt;: mov    QWORD PTR [rsp+0x158],rsi
+   0x7ffff7dee6cf &lt;_dl_runtime_resolve_avx+47&gt;: mov    QWORD PTR [rsp+0x160],rdi
+   0x7ffff7dee6d7 &lt;_dl_runtime_resolve_avx+55&gt;: mov    QWORD PTR [rsp+0x168],r8
+   0x7ffff7dee6df &lt;_dl_runtime_resolve_avx+63&gt;: mov    QWORD PTR [rsp+0x170],r9
+   0x7ffff7dee6e7 &lt;_dl_runtime_resolve_avx+71&gt;: vmovdqa YMMWORD PTR [rsp],ymm0
+   0x7ffff7dee6ec &lt;_dl_runtime_resolve_avx+76&gt;: vmovdqa YMMWORD PTR [rsp+0x20],ymm1
+   0x7ffff7dee6f2 &lt;_dl_runtime_resolve_avx+82&gt;: vmovdqa YMMWORD PTR [rsp+0x40],ymm2
+   0x7ffff7dee6f8 &lt;_dl_runtime_resolve_avx+88&gt;: vmovdqa YMMWORD PTR [rsp+0x60],ymm3
+   0x7ffff7dee6fe &lt;_dl_runtime_resolve_avx+94&gt;: vmovdqa YMMWORD PTR [rsp+0x80],ymm4
+   0x7ffff7dee707 &lt;_dl_runtime_resolve_avx+103&gt;:        vmovdqa YMMWORD PTR [rsp+0xa0],ymm5
+   0x7ffff7dee710 &lt;_dl_runtime_resolve_avx+112&gt;:        vmovdqa YMMWORD PTR [rsp+0xc0],ymm6
+   0x7ffff7dee719 &lt;_dl_runtime_resolve_avx+121&gt;:        vmovdqa YMMWORD PTR [rsp+0xe0],ymm7
+   0x7ffff7dee722 &lt;_dl_runtime_resolve_avx+130&gt;:        bndmov [rsp+0x100],bnd0
+   0x7ffff7dee72b &lt;_dl_runtime_resolve_avx+139&gt;:        bndmov [rsp+0x110],bnd1
+   0x7ffff7dee734 &lt;_dl_runtime_resolve_avx+148&gt;:        bndmov [rsp+0x120],bnd2
+   0x7ffff7dee73d &lt;_dl_runtime_resolve_avx+157&gt;:        bndmov [rsp+0x130],bnd3
+   0x7ffff7dee746 &lt;_dl_runtime_resolve_avx+166&gt;:        mov    rsi,QWORD PTR [rbx+0x10]
+   0x7ffff7dee74a &lt;_dl_runtime_resolve_avx+170&gt;:        mov    rdi,QWORD PTR [rbx+0x8]
+   0x7ffff7dee74e &lt;_dl_runtime_resolve_avx+174&gt;:        call   0x7ffff7de6820 &lt;_dl_fixup&gt;
+   0x7ffff7dee753 &lt;_dl_runtime_resolve_avx+179&gt;:        mov    r11,rax
+   0x7ffff7dee756 &lt;_dl_runtime_resolve_avx+182&gt;:        bndmov bnd3,[rsp+0x130]
+   0x7ffff7dee75f &lt;_dl_runtime_resolve_avx+191&gt;:        bndmov bnd2,[rsp+0x120]
+   0x7ffff7dee768 &lt;_dl_runtime_resolve_avx+200&gt;:        bndmov bnd1,[rsp+0x110]
+
+gdb-peda$ x/30i 0x7ffff7de6820
+   0x7ffff7de6820 &lt;_dl_fixup&gt;:  push   rbx
+   0x7ffff7de6821 &lt;_dl_fixup+1&gt;:        mov    r10,rdi
+   0x7ffff7de6824 &lt;_dl_fixup+4&gt;:        mov    esi,esi
+   0x7ffff7de6826 &lt;_dl_fixup+6&gt;:        lea    rdx,[rsi+rsi*2]
+   0x7ffff7de682a &lt;_dl_fixup+10&gt;:       sub    rsp,0x10
+   0x7ffff7de682e &lt;_dl_fixup+14&gt;:       mov    rax,QWORD PTR [rdi+0x68] // 69 l_info[DT_STRTAB]
+   0x7ffff7de6832 &lt;_dl_fixup+18&gt;:       mov    rdi,QWORD PTR [rax+0x8]  // 69 [rdi = strtab] const char *strtab = (const void *) D_PTR (l, l_info[DT_STRTAB]);
+   0x7ffff7de6836 &lt;_dl_fixup+22&gt;:       mov    rax,QWORD PTR [r10+0xf8] // 72 (D_PTR (l, l_info[DT_JMPREL])
+   0x7ffff7de683d &lt;_dl_fixup+29&gt;:       mov    rax,QWORD PTR [rax+0x8]  // 72 const PLTREL *const reloc = (const void *) (D_PTR (l, l_info[DT_JMPREL]) + reloc_offset)
+   0x7ffff7de6841 &lt;_dl_fixup+33&gt;:       lea    r8,[rax+rdx*8] 
+   0x7ffff7de6845 &lt;_dl_fixup+37&gt;:       mov    rax,QWORD PTR [r10+0x70] // 68 (const void *) D_PTR (l, l_info[DT_SYMTAB])
+   0x7ffff7de6849 &lt;_dl_fixup+41&gt;:       mov    rcx,QWORD PTR [r8+0x8]   // 73 reloc-&gt;r_info
+   0x7ffff7de684d &lt;_dl_fixup+45&gt;:       mov    rax,QWORD PTR [rax+0x8]  // 73 const &amp;symtab[ELFW(R_SYM) (reloc-&gt;r_info)]
+   0x7ffff7de6851 &lt;_dl_fixup+49&gt;:       mov    rdx,rcx  // 73 const ElfW(Sym) *sym = &amp;symtab[ELFW(R_SYM) (reloc-&gt;r_info)]
+   0x7ffff7de6854 &lt;_dl_fixup+52&gt;:       shr    rdx,0x20 // 73
+   0x7ffff7de6858 &lt;_dl_fixup+56&gt;:       lea    rsi,[rdx+rdx*2] // 73
+   0x7ffff7de685c &lt;_dl_fixup+60&gt;:       lea    rsi,[rax+rsi*8] // 73 [rsi = sym, 0x400270]
+   0x7ffff7de6860 &lt;_dl_fixup+64&gt;:       mov    rax,QWORD PTR [r10] // 74 
+   0x7ffff7de6863 &lt;_dl_fixup+67&gt;:       mov    QWORD PTR [rsp+0x8],rsi // 73
+   0x7ffff7de6868 &lt;_dl_fixup+72&gt;:       mov    rbx,rax // 74
+   0x7ffff7de686b &lt;_dl_fixup+75&gt;:       add    rbx,QWORD PTR [r8] // 74 void *const rel_addr = (void *)(l-&gt;l_addr + reloc-&gt;r_offset);
+   0x7ffff7de686e &lt;_dl_fixup+78&gt;:       cmp    ecx,0x7 // 79
+   0x7ffff7de6871 &lt;_dl_fixup+81&gt;:       jne    0x7ffff7de69c7 &lt;_dl_fixup+423&gt; // 79
+   0x7ffff7de6877 &lt;_dl_fixup+87&gt;:       test   BYTE PTR [rsi+0x5],0x3
+   0x7ffff7de687b &lt;_dl_fixup+91&gt;:       jne    0x7ffff7de6919 &lt;_dl_fixup+249&gt;
+   0x7ffff7de6881 &lt;_dl_fixup+97&gt;:       mov    rax,QWORD PTR [r10+0x1c8]
+</code></pre></div></div> <p>[References]</p> <p><a href="http://www.skyfree.org/linux/references/ELF_Format.pdf" rel="external nofollow noopener" target="_blank">http://www.skyfree.org/linux/references/ELF_Format.pdf</a><br> <a href="https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf" rel="external nofollow noopener" target="_blank">https://software.intel.com/sites/default/files/article/402129/mpx-linux64-abi.pdf<br> </a><a href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=elf/elf.h" rel="external nofollow noopener" target="_blank">https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=elf/elf.h<br> </a><a href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=elf/dl-reloc.c" rel="external nofollow noopener" target="_blank">https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=elf/dl-reloc.c<br> </a><a href="http://www.cs.stevens.edu/~jschauma/810/elf.html" rel="external nofollow noopener" target="_blank">http://www.cs.stevens.edu/~jschauma/810/elf.html</a></p> </div> </article> <br> <hr> <br> <ul class="list-disc pl-8"></ul> <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2> <p class="mb-2">Here are some more articles you might like to read next:</p> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2018/compiler-assisted-code-randomization/">Compiler-assisted Code Randomization</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/code-reuse-attacks-and-defenses/">Code Reuse Attacks and Defenses</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/cyber-grand-challenge-by-darpa/">Cyber Grand Challenge by DARPA</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2016/juggling-the-gadgets-instruction-displacement-to-mitigate-code-reuse-attack/">Juggling the Gadgets: Instruction Displacement to Mitigate Code Reuse Attack</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2014/rootkit-module-in-linux-kernel-3-2/">Rootkit module in Linux Kernel 3.2</a> </li> </div> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2024 Hyungjoon Koo. Last updated: February 27, 2024. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script src="/assets/js/bootstrap.bundle.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script> <script defer src="/assets/js/masonry.js" type="text/javascript"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script> <script defer src="/assets/js/zoom.js?7b30caa5023af4af8408a472dc4e1ebb"></script> <script defer src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script> <script src="/assets/js/no_defer.js?d633890033921b33e0ceb13d22340a9c"></script> <script defer src="/assets/js/common.js?acdb9690d7641b2f8d40529018c71a01"></script> <script defer src="/assets/js/copy_code.js?c9d9dd48933de3831b3ee5ec9c209cac" type="text/javascript"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>
