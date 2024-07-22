@@ -1,16 +1,15 @@
 ---
 ---
 
-@INPROCEEDINGS {binadapter,
+@INPROCEEDINGS {r2i,
 abbr={Conference},
 author =  {Haeun Eom and Dohee Kim and Sori Lim and Hyungjoon Koo and Sungjae Hwang},
-title = {R2I: A Relative Readability Metric for Decompiled Code (To Appear)},
+title = {R2I: A Relative Readability Metric for Decompiled Code},
 year = {2024},
 month = {July},
-isbn = {},
 publisher = {Association for Computing Machinery},
-url = {https://},
-doi = {},
+url = {https://dl.acm.org/doi/10.1145/3643744},
+doi = {10.1145/3634737.3645006},
 abstract = {Decompilation is a process of converting a low-level machine code snippet back into a high-level programming
 language such as C. It serves as a basis to aid reverse engineers in comprehending the contextual semantics of
 the code. In this respect, commercial decompilers like Hex-Rays have made significant strides in improving
@@ -28,27 +27,25 @@ coding styles and preferences. Our empirical experiments demonstrate that R2I is
 representing the relative quality of decompiled code (e.g., obfuscation, decompiler updates) and being well
 aligned with human perception in our survey.},
 booktitle = {Proceedings of the ACM International Conference on the Foundations of Software Engineering (FSE 2024)},
-pages = {1-1},
-numpages = {},
+pages = {383-405},
 keywords = {Code Readability, Code Metric, Decompiled Code, Decompiler},
 location = {Porto de Galinhas, Brazil},
 series = {FSE '24},
 selected={true},
 bibtex_show={true},
-pdf={#},
-slides={#}
+pdf={fse24-r2i.pdf},
+slides={fse24-r2i-slides.pdf}
 }
 
 @INPROCEEDINGS {binadapter,
 abbr={Conference},
 author =  {Nozima Murodova and Hyungjoon Koo},
-title = {BinAdapter: Leveraging Continual Learning for Inferring Function Symbol Names in a Binary (To appear)},
+title = {BinAdapter: Leveraging Continual Learning for Inferring Function Symbol Names in a Binary},
 year = {2024},
 month = {July},
-isbn = {},
 publisher = {Association for Computing Machinery},
-url = {https://},
-doi = {},
+url = {https://dl.acm.org/doi/10.1145/3634737.3645006},
+doi = {10.1145/3634737.3645006},
 abstract = {Binary reverse engineering is crucial to gain insights into the inner
 workings of a stripped binary. Yet, it is challenging to read the original semantics from a binary code snippet 
 because of the unavailability of high-level information in the source, such as function
@@ -77,15 +74,15 @@ evaluate the above three scenarios using incremental datasets with or without a 
 optimization levels. Our empirical results show that BinAdapter outperforms the state-of-the-art 
 CL techniques for an F1 of up to 24.3% or a Rouge-l of 21.5% in performance.},
 booktitle = {Proceedings of the 19th ACM ASIA Conference on Computer and Communications Security (ASIACCS)},
-pages = {1-1},
-numpages = {},
+pages = {1200-1213},
 keywords = {Binary analysis, Software security, Reverse engineering, Continual learning},
 location = {Singapore},
 series = {ASIACCS '24},
 selected={true},
 bibtex_show={true},
-pdf={#},
-slides={#}
+pdf={asiaccs24-binadapter.pdf},
+slides={asiaccs24-binadapter-slides.pdf},
+code={https://github.com/SecAI-Lab/BinAdapter}
 }
 
 @article{toolphet,
@@ -112,7 +109,7 @@ compilation toolchains.
 },
   journal={IEEE Access},
   volume={11},
-  pages={#--#},
+  pages={12667--12682},
   year={2024},
   month={Jan},
   publisher={IEEE},
@@ -127,7 +124,6 @@ author = {Younggi Park and Hwiwon Lee and Jinho Jung and Hyungjoon Koo and Huyka
 booktitle = {Proceedings of the 45th IEEE Symposium on Security and Privacy (S&P)},
 title = {BENZENE: A Practical Root Cause Analysis System with an Under-Constrained State Mutation (Distinguished Paper Award)},
 year = {2024},
-volume = {},
 issn = {2375-1207},
 pages = {74-74},
 abstract = {Fuzzing has demonstrated great success in bug discovery, and plays a crucial role in software testing today. 
@@ -151,6 +147,7 @@ month = {may},
 bibtex_show={true},
 selected={true},
 pdf={sp24-benzene-official.pdf},
+slides={sp24-benzene-slides.pdf},
 code={https://github.com/zer0fall/BENZENE},
 }
 
