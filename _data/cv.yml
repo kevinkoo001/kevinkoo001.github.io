@@ -4,7 +4,7 @@
     - name: Full Name
       value: Hyungjoon Koo
     - name: Job
-      value: Assistant Professor
+      value: Associate Professor
     - name: Email
       value: kevin.koo AT skku.edu
     - name: Telephone
@@ -89,23 +89,11 @@
       institution: Shinhan Bank
       year: 2011-2012
       description: 
-       - Review, deployment, and operation on Advanced Persistent Threat (a.k.a APT) products
-       - Discovery and analysis on new breed of on the fly cyber attacks over company network
-       - Cryptographic module maintenance for critical customers’ information 
-       - Up to date anti-virus engine deployment to protect 24/7 ATM banking
-       - Security review for brand-new banking services to comply related regulations
 
     - title: Assistant Manager 
       institution: Samsung SDS
       year: 2006-2011
       description: 
-       - Policy establishment and deployment to decrease botnet activities over company network
-       - Leading the project to design Security History Information Management System for web apps
-       - Writing guidelines and education about web application security for developers 
-       - Penetration testing on Sri Lanka’s Government Network project (2007)
-       - Incident response against web/network based attacks
-       - Review security COTS products including web app firewall, source code analysis tool, etc.
-       - Performing internal IT audit
 
 - title: Services
   type: nested_list
@@ -113,14 +101,15 @@
     - title: Program Committee
       items: 
       - IEEE Symposium on Security and Privacy (S&P) 2024
-      - Annual Computer Security Applications Conference (ACSAC) 2023
+      - Annual Computer Security Applications Conference (ACSAC) 2024, 2023
       - International Symposium on Foundations & Practice of Security (FPS) 2023, 2022
       - NYU’s CSAW Program Committee 2023, 2022, 2021, 2020, 2019
       - World Conference on Information Security Applications (WISA) 2021
 
     - title: Organizing Committee
-      items: 
-      - Publication Chair for IEEE Secure Development Conference (SecDev) 2024, 2023
+      items:
+      - Co-chair (Security and Privacy) in International Conference on Parallel and Distributed Systems (ICPADS) 2024
+      - Publication Chair in IEEE Secure Development Conference (SecDev) 2024, 2023
 
     - title: Session Chair
       items: 
@@ -128,8 +117,11 @@
       - Workshop on Privacy in the Electronic Society (WPES), collocated with CCS 2021
       - World Conference on Information Security Applications (WISA) 2021
     
-    - title: Journal Reviewer
+    - title: Journal Services
       items: 
+      - Editor, Journal of Information Processing Systems (JIPS, 2024)
+      - Neurocomputing (2024)
+      - Information and Software Technology (IST, 2024)
       - IEEE Transactions on Dependable and Secure Computing (TDSC) 2022
       - Computers and Security (COSE) 2023, 2021
       - IEEE Internet Computing (IC) 2022
@@ -137,50 +129,60 @@
       - Frontiers of Information Technology & Electronic Engineering (FITEE) 2020
       - IEEE Access 2019
       - IEEE/ACM Transactions on Networking (TON) 2019
-      - IEEE Security & Privacy Magazine (S&P) 2019
+      - IEEE Security & Privacy Magazine (S&P) 2024, 2021, 2019
 
 - title: Invited Talks
   type: nested_list
   contents:
     - items: 
-        - Understanding of Advanced Code Reuse Attacks and Defenses, UNIST Security Seminar (Dec 2022)
-        - A Practical Binary Similarity Detection Approach, Sejong Cybersecurity Workshop 0x01 (Oct 2022)
-        - Binary Code Representation for Deep Learning and its Applications, Software Convergence Symposium (SWCS, Apr 2022)
-        - Semantic-aware Binary Code Representation with Deep Learning, Fall KAIST Security Colloquium (Nov 2021)
-        - Executable Binary Code Representation with Deep Learning, KOCSEA Technical Symposium Program (Nov 2021)
-        - Crash Course on Deep Learning for Security, Soongsil University (Jul 2021)
-        - Toward Better Binary Code Representation with Deep Learning, Seoul National University (Jun 2021)
-        - Software Protection via Code Randomization, University of Tennessee (Nov 2020)
-        - Practical Software Specialization against Code Reuse Attacks, Sungkyunkwan University (Feb 2019)
-        - Practical Software Specialization against Code Reuse Attacks, KAIST (Feb 2019)
-        - Practical Software Hardening against Code Reuse Attacks, Georgia Tech (Nov 2018)
-        - Software Hardening with Code Diversification, CS Colloquium at SUNY Korea (Jun 2018)
+        - Executable Binary Analysis with AI, Workshop on Information Security and Cryptography (WISC, Sep. 2023)
+        - A Transformer based Function Symbol Name Inference Model from an Assembly Language for Binary Reversing, Kyunghee University Seminar (Aug. 2023)
+        - Understanding of Advanced Code Reuse Attacks and Defenses, UNIST Security Seminar (Dec. 2022)
+        - A Practical Binary Similarity Detection Approach, Sejong Cybersecurity Workshop 0x01 (Oct. 2022)
+        - Binary Code Representation for Deep Learning and its Applications, Software Convergence Symposium (SWCS, Apr. 2022)
+        - Semantic-aware Binary Code Representation with Deep Learning, Fall KAIST Security Colloquium (Nov. 2021)
+        - Executable Binary Code Representation with Deep Learning, KOCSEA Technical Symposium Program (Nov. 2021)
+        - Crash Course on Deep Learning for Security, Soongsil University (Jul. 2021)
+        - Toward Better Binary Code Representation with Deep Learning, Seoul National University (Jun. 2021)
+        - Software Protection via Code Randomization, University of Tennessee (Nov. 2020)
+        - Practical Software Specialization against Code Reuse Attacks, Sungkyunkwan University (Feb. 2019)
+        - Practical Software Specialization against Code Reuse Attacks, KAIST (Feb. 2019)
+        - Practical Software Hardening against Code Reuse Attacks, Georgia Tech (Nov. 2018)
+        - Software Hardening with Code Diversification, CS Colloquium at SUNY Korea (Jun. 2018)
         - Software Hardening with Code Diversification, Korea University (May 2018)
         - Software Hardening with Code Diversification, Samsung Research (May 2018)
-        - Software Hardening, Cyber Symposium by the Stony Brook Computing Society (Apr 2018)
+        - Software Hardening, Cyber Symposium by the Stony Brook Computing Society (Apr. 2018)
         - Elaborate Attacks with Existing Tools, National Computing & Information Agency (May 2013)
-        - Anonymizing Yourself with Tor, Korea Internet & Security Agency (Apr 2013)
+        - Anonymizing Yourself with Tor, Korea Internet & Security Agency (Apr. 2013)
 
 - title: Patents
   type: nested_list
   contents:
+    - title: Relative readability index for Decompiled Codes
+    - items:
+        - Hyungjoon Koo, Sungjae Hwang, Haeun Eom, Dohee Kim, Sori Lim
+        - (KR) App No. 10-2024-0105125
     - title: Methods and apparatus for inferring function symbols from assembly code in transformer-based executable binary, and recording medium
       items: 
         - Hyungjoon Koo, Hyunjin Kim, and Jinyeong Bak
-        - App No. 10-2023-0067351, South Korea
+        - (KR) App No. 10-2023-0067351; (US) App No. 18-674-646
     - title: Watermarking method for smart contract
       items:
         - Hyoungshick Kim, Taeyoung Kim, Yunhee Jang, Chanjong Lee, and Hyungjoon Koo
-        - App No. 10-2022-0116335, South Korea
+        - (KR) App No. 10-2022-0116335, (US) App No. 18-368-734
+    - title: Apparatus and method for detecting similarity of binary code
+      items:
+        - Sunwoo Ahn, Seonggwan Ahn, Hyungjoon Koo, and Yunheung Paek
+        - (KR) App No. 10-2023-0035069; (US) App No. 18-596-194
     - title: Method and device of embedding watermark in software
       items:
         - Hyungjoon Koo, Sangjin Lee, and Honggu Kang
-        - App No. 10-2021-0170916, South Korea
+        - (KR) App No. 10-2021-0170916; (US) App No. 18-073-876
     - title: Method of detecting intrusion for infotainment systems and apparatus thereof 
       items:
         - Hyungjoon Koo
-        - Patent No. 10-2022-0005421, South Korea
+        - (KR) Patent No. 10-2022-0005421
     - title: System and method for responding DDoS offensive
       items:
-        - 허창열, 구본재, 박봉희, Hyungjoon Koo, 정규태
-        - Patent No. 10-2010-0065260, South Korea
+        - Changryul Huh, Bonjae Koo, Bonghui Park, Hyungjoon Koo, Kyutae Jeong
+        - (KR) Patent No. 10-2010-0065260
