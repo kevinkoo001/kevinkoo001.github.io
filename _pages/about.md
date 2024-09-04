@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: Assistant Professor in SKKU (kevin.koo AT skku.edu); 27316B, 2nd Eng. Bldg., Natural Science Campus, Sungkyunkwan University (2066 Seobu-ro, Jangan-gu, Suwon, South Korea)
+subtitle: Associate Professor in SKKU (kevin.koo AT skku.edu); 27316B, 2nd Eng. Bldg., Natural Science Campus, Sungkyunkwan University (2066 Seobu-ro, Jangan-gu, Suwon, South Korea)
 profile:
   align: right
   image: koo.jpg
