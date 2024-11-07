@@ -1,0 +1,9 @@
+---
+layout: post
+date: 2024-10-31 15:59:00-0400
+inline: true
+related_posts: false
+---
+
+Our paper, An Empirical Study of Black-box based Membership Inference Attacks on a Real-World Dataset, has been accepted to FPS 2024!
+
