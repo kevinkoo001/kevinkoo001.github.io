@@ -1,5 +1,27 @@
 ---
 ---
+
+@INPROCEEDINGS {phishing-models-usenix25,
+abbr={Conference},
+author =  {Fujiao Ji and Kiho Lee and Hyungjoon Koo and Wenhao You and Euijin Choo and Hyoungshick Kim and Doowon Kim},
+title = {Evaluating the Effectiveness and Robustness of Visual Similarity-based Phishing Detection Models (To appear)},
+year = {2025},
+month = {aug},
+publisher = {USENIX Association},
+url = {},
+doi = {},
+abstract = {Phishing attacks pose a significant threat to Internet users, with cybercriminals elaborately replicating the visual appearance of legitimate websites to deceive victims. Visual similarity-based detection systems have emerged as an effective countermeasure, but their effectiveness and robustness in real-world scenarios have been underexplored. In this paper, we comprehensively scrutinize and evaluate the effectiveness and robustness of popular visual similarity-based anti-phishing models using a large-scale dataset of 451k real-world phishing websites. Our analyses of the effectiveness reveal that while certain visual similarity-based models achieve high accuracy on curated datasets in the experimental settings, they exhibit notably low performance on real-world datasets, highlighting the importance of real-world evaluation. Furthermore, we find that the attackers evade the detectors mainly in three ways: (1) directly attacking the model pipelines, (2) mimicking benign logos, and (3) employing relatively simple strategies such as eliminating logos from screenshots. To statistically assess the resilience and robustness of existing models against adversarial attacks, we categorize the strategies attackers employ into visible and perturbation-based manipulations and apply them to website logos. We then evaluate the models’ robustness using these adversarial samples. Our findings reveal potential vulnerabilities in several models, emphasizing the need for more robust visual similarity techniques capable of withstanding sophisticated evasion attempts. We provide actionable insights for enhancing the security of phishing defense systems, encouraging proactive actions.},
+booktitle = {Proceedings of the 34nd USENIX Conference on Security Symposium (USENIX)},
+pages = {XXX-XXX},
+keywords = {phishing detection model, evaluation, visual similarity},
+location = {Seattle, USA},
+series = {USENIX '25},
+selected={true},
+bibtex_show={true},
+pdf={#},
+slides={#},
+}
+
 @INPROCEEDINGS {blackbox-mia,
 abbr={Conference},
 author =  {Yujeong Kwon and Simon S. Woo and Hyungjoon Koo},
@@ -33,7 +55,7 @@ or a sample's properties can impact the accuracy of membership
 inference on members and non-members.},
 booktitle = {Proceedings of the 17th International Symposium on Foundations and Practice of Security (FPS)},
 pages = {XXX-XXX},
-keywords = {Membership Inference Attack · Machine Learning},
+keywords = {Membership Inference Attack, Machine Learning},
 location = {Montreal, Canada},
 series = {FPS '24},
 selected={true},
@@ -130,7 +152,7 @@ code={https://github.com/SecAI-Lab/BinAdapter}
 @article{toolphet,
   abbr={Journal},
   title={ToolPhet: Inference of Compiler Provenance from Stripped Binaries with Emerging Compilation Toolchains},
-  author={Hohyeon Jang, Nozima Murodova, and Hyungjoon Koo},
+  author={Hohyeon Jang and Nozima Murodova and Hyungjoon Koo},
   abstract = {Identifying compiler toolchain provenance serves as a basis for both benign and malicious 
 binary analyses. A wealth of prior studies mostly focuses on the inference of a popular compiler toolchain
 for C and C++ languages from stripped binaries that are built with GCC or clang. Lately, the popularity of
