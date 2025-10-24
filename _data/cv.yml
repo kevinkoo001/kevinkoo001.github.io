@@ -4,7 +4,7 @@
     - name: Full Name
       value: Hyungjoon Koo
     - name: Job
-      value: Assistant Professor
+      value: Associate Professor
     - name: Email
       value: kevin.koo AT skku.edu
     - name: Telephone
@@ -171,7 +171,7 @@
     - title: Binary code similarity detection and method
       items: 
         - Hyungjoon Koo, Yunheung Paek, Sunwoo Ahn, and Seonggwan Ahn
-        - App No. 10-2023-0035069, South Korea
+        - Patent No. 10-2852624, South Korea
         - App No. 18-596-194, United States
     - title: Methods and apparatus for inferring function symbols from assembly code in transformer-based executable binary, and recording medium
       items: 
@@ -182,7 +182,7 @@
       items:
         - Hyoungshick Kim, Taeyoung Kim, Yunhee Jang, Chanjong Lee, and Hyungjoon Koo
         - Patent No. 10-2741959, South Korea
-        - App No. 18-368-734, United States
+        - Patent No. 12399962, United States
     - title: Method and device of embedding watermark in software
       items:
         - Hyungjoon Koo, Sangjin Lee, and Honggu Kang
