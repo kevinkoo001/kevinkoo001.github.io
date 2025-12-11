@@ -35,5 +35,4 @@ With the _Internet of Things_, security matters everywhere by getting more conne
 [Github](https://github.com/kevinkoo001) ||
 [LinkedIn](https://www.linkedin.com/in/kevinkoo001) ||
 [Facebook](https://www.facebook.com/kevinkoo001) ||
-[Tweet](http://twitter.com/mrkoo001)
 * * *
