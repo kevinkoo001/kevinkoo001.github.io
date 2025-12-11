@@ -1,24 +1,116 @@
 ---
 ---
 
+@INPROCEEDINGS {unlearning-icse-seip26,
+abbr={Conference},
+author = {Intae Jeon and Yujeong Kwon and Hyungjoon Koo},
+title = {UnPII: Unlearning Personally Identifiable Information with Quantifiable Exposure Risk (To appear)},
+year = {2026},
+month = {feb},
+publisher = {},
+url = {https://conf.researchr.org/track/icse-2026/icse-2026-software-engineering-in-practice},
+doi = {},
+abstract = {The ever-increasing adoption of Large Language Models in critical
+sectors like finance, healthcare, and government raises privacy concerns 
+regarding the handling of sensitive Personally Identifiable
+Information (PII) during training. In response, regulations such as
+European Union’s General Data Protection Regulation (GDPR) mandate 
+the deletion of PII upon requests, underscoring the need for
+reliable and cost-effective data removal solutions. Machine unlearning 
+has emerged as a promising direction for selectively forgetting
+data points. However, existing unlearning techniques typically ap-
+ply a uniform forgetting strategy that neither accounts for the
+varying privacy risks posed by different PII attributes nor reflects
+associated business risks. In this work, we propose UnPII, the first
+PII-centric unlearning approach that prioritizes forgetting based
+on the risk of individual or combined PII attributes. To this end, we
+introduce the PII risk index (PRI), a composite metric that incorporates 
+multiple dimension of risk factors: identifiability, sensitivity,
+usability, linkability, permanency, exposability, and compliancy.
+The PRI enables a nuanced evaluation of privacy risks associated
+with PII exposures and can be tailored to align with organizational
+privacy policies. To support realistic assessment, we systematically
+construct a synthetic PII dataset (e.g., 1,700 PII instances) that simulates 
+realistic exposure scenarios. UnPII seamlessly integrates with
+established unlearning algorithms, such as Gradient Ascent, Nega-
+tive Preference Optimization, and Direct Preference Optimization,
+without modifying their underlying principles. Our experimental
+results demonstrate that UnPII achieves the improvements of accuracy 
+up to 11.8\%, utility up to 6.3\%, and generalizability up to
+12.4\%, respectively, while incurring a modest fine-tuning overhead
+of 27.5\% on average during unlearning.},
+booktitle = {Proceedings of the Software Engineering in Practice track of the International Conference on Software Engineering (ICSE-SEIP '26)},
+pages = {},
+keywords = {},
+location = {Rio de Janeiro, Brazil},
+series = {ICSE-SEIP '26},
+selected={false},
+bibtex_show={true},
+pdf={#},
+}
+
+@INPROCEEDINGS {inlining-ndss26,
+abbr={Conference},
+author =  {Omar Abusabha and Jiyong Uhm and Tamer Abuhmed and Hyungjoon Koo},
+title = {A Deep Dive into Function Inlining and its Security Implications for ML-based Binary Analysis (To appear)},
+year = {2026},
+month = {feb},
+publisher = {},
+url = {https://www.ndss-symposium.org/ndss2026/},
+doi = {10.14722/ndss.2026.241872},
+abstract = {A function inlining optimization is a widely used
+transformation in modern compilers, which replaces a call site
+with the callee’s body in need. While this transformation improves
+performance, it significantly impacts static features such as
+machine instructions and control flow graphs, which are crucial to
+binary analysis. Yet, despite its broad impact, the security impact
+of function inlining remains underexplored to date. In this paper,
+we present the first comprehensive study of function inlining
+through the lens of machine learning-based binary analysis. To
+this end, we dissect the inlining decision pipeline within the
+LLVM’s cost model and explore the combinations of the compiler
+options that aggressively promote the function inlining ratio
+beyond standard optimization levels, which we term extreme
+inlining. We focus on five ML-assisted binary analysis tasks
+for security, using 20 unique models to systematically evaluate
+their robustness under extreme inlining scenarios. Our extensive
+experiments reveal several significant findings: i) function inlining, 
+though a benign transformation in intent, can (in)directly
+affect ML model behaviors, being potentially exploited by evading
+discriminative or generative ML models; ii) ML models relying
+on static features can be highly sensitive to inlining; iii) subtle
+compiler settings can be leveraged to deliberately craft evasive
+binary variants; and iv) inlining ratios vary substantially across
+applications and build configurations, undermining assumptions
+of consistency in training and evaluation of ML models.}, 
+booktitle = {Proceedings of the Network and Distributed System Security (NDSS) Symposium},
+pages = {},
+keywords = {},
+location = {San Diego, US},
+series = {NDSS '26},
+selected={true},
+bibtex_show={true},
+pdf={#},
+}
+
 @INPROCEEDINGS {ragdefender-acsac25,
 abbr={Conference},
 author =  {Minseok Kim and Hankook Lee and Hyungjoon Koo},
-title = {Rescuing the Unpoisoned: Efficient Defense against Knowledge Corruption Attacks on RAG Systems (To appear)},
+title = {Rescuing the Unpoisoned: Efficient Defense against Knowledge Corruption Attacks on RAG Systems},
 year = {2025},
 month = {dec},
 publisher = {IEEE},
 url = {https://www.openconf.org/acsac2025/modules/request.php?module=oc_program&action=program.php&p=program},
 doi = {10.1109/ACSAC67867.2025.00093},
 abstract = {Large language models (LLMs) are reshaping numerous facets of our daily lives, leading widespread adoption as web-based services. Despite their versatility, LLMs face notable challenges, such as generating hallucinated content and lacking access to up-to-date information. Lately, to address such limitations, Retrieval-Augmented Generation (RAG) has emerged as a promising direction by generating responses grounded in external knowledge sources. A typical RAG system consists of i) a retriever that probes a group of relevant passages from a knowledge base and ii) a generator that formulates a response based on the retrieved content. However, as with other AI systems, recent studies demonstrate the vulnerability of RAG, such as knowledge corruption attacks by injecting misleading information. In response, several defense strategies have been proposed, including having LLMs inspect the retrieved passages individually or fine-tuning robust retrievers. While effective, such approaches often come with substantial computational costs. In this work, we introduce RAGDEFENDER, a resource-efficient defense mechanism against knowledge corruption (i.e., by data poisoning) attacks in practical RAG deployments. RAGDEFENDER operates during the post-retrieval phase, leveraging lightweight machine learning techniques to detect and filter out adversarial content without requiring additional model training or inference. Our empirical evaluations show that RAGDEFENDER consistently outperforms existing state-of-the-art defenses across multiple models and adversarial scenarios: e.g., RAGDEFENDER reduces the attack success rate (ASR) against the Gemini model from 0.89 to as low as 0.02, compared to 0.69 for RobustRAG and 0.24 for Discern-and-Answer when adversarial passages outnumber legitimate ones by a factor of four (4x).},
-booktitle = {Annual Computer Security Applications Conference (ACSAC)},
+booktitle = {Proceedings of the Annual Computer Security Applications Conference (ACSAC)},
 pages = {1178-1192},
 keywords = {},
 location = {Hawaii,US},
 series = {ACSAC '25},
 selected={false},
 bibtex_show={true},
-pdf={#},
+pdf={acsac25-ragdefender.pdf},
 }
 
 @INPROCEEDINGS {dl-obfcode-sure25,
