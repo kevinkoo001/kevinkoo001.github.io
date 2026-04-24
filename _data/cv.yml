@@ -157,7 +157,7 @@
   type: nested_list
   contents:
     - items:
-        - A Decade-long Landscape of Advanced Persistent Threats: Longitudinal Analysis and Global Trends, AI Security Research Group, KIISC (Dec. 2025)
+        - A Decade-long Landscape of Advanced Persistent Threats, AI Security Research Group, KIISC (Dec. 2025)
         - Binary Reversing with AI, ENKI Whitehat (Sep. 2024)
         - AI-assisted Executable Binary Reversing, National Security Research Institute (NSR, Sep. 2024)
         - Executable Binary Analysis with AI, Workshop on Information Security and Cryptography (WISC '23) (Sep. 2023)
